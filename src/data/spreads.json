@@ -1,0 +1,34 @@
+[
+  {
+    "id": "four-elements",
+    "name": "四元素牌阵",
+    "description": "独创四元素体系，从五个维度洞察你的状态",
+    "icon": "✦",
+    "modes": ["improve", "state"],
+    "modeLabels": {
+      "improve": "我需要改进什么？",
+      "state": "我目前是什么样的状态？"
+    },
+    "positions": [
+      { "id": "core", "label": "核心", "element": null, "pool": "all", "desc": "最需要注意的核心问题" },
+      { "id": "fire", "label": "火", "element": "fire", "pool": "wands", "desc": "行动力·热情·目的" },
+      { "id": "air", "label": "风", "element": "air", "pool": "swords", "desc": "思维·言语·沟通·逻辑" },
+      { "id": "water", "label": "水", "element": "water", "pool": "cups", "desc": "情感·内心·直觉·潜意识" },
+      { "id": "earth", "label": "土", "element": "earth", "pool": "pentacles", "desc": "经济·物质·金钱·工作" }
+    ]
+  },
+  {
+    "id": "salon",
+    "name": "沙龙牌阵",
+    "description": "简洁直观，适合多人沙龙场景",
+    "icon": "◈",
+    "modes": ["improve"],
+    "modeLabels": {
+      "improve": "我需要改进什么？"
+    },
+    "positions": [
+      { "id": "current", "label": "现状", "element": null, "pool": "all", "desc": "我目前的状态" },
+      { "id": "direction", "label": "方向", "element": null, "pool": "all", "desc": "需要改进的方向" }
+    ]
+  }
+]
