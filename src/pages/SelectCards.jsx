@@ -2,6 +2,9 @@ import { useState, useMemo } from 'react'
 import spreads from '../data/spreads.json'
 import allCards from '../data/cards.json'
 
+const COURT_KEYWORDS = ['侍从', '骑士', '皇后', '国王']
+const isCourtCard = (card) => COURT_KEYWORDS.some(kw => card.name_zh.includes(kw))
+
 const ELEMENT_COLORS = {
   fire: 'from-red-100 to-orange-50 border-red-300',
   water: 'from-blue-100 to-indigo-50 border-blue-300',
@@ -21,6 +24,14 @@ const SUIT_NAMES = {
   cups: '圣杯',
   swords: '宝剑',
   pentacles: '星币',
+}
+
+// Get the right positions array based on spread and mode
+const getPositions = (spread, mode) => {
+  if (spread.id === 'four-elements') {
+    return mode === 'phase1' ? spread.positions_phase1 : spread.positions_phase2
+  }
+  return spread.positions
 }
 
 export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
@@ -43,29 +54,43 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
     )
   }
 
+  const positions = getPositions(spread, reading.mode)
   const [activePos, setActivePos] = useState(null)
   const [reversed, setReversed] = useState(false)
   const [suitFilter, setSuitFilter] = useState(null)
 
   const filledCount = Object.keys(reading.cards).length
-  const allFilled = filledCount === spread.positions.length
+  const allFilled = filledCount === positions.length
 
   // Filter cards based on the active position's pool
   const filteredCards = useMemo(() => {
     if (!activePos) {
-      // Show all when no position is active (browse mode)
+      // Browse mode — show all cards
       if (suitFilter) return allCards.filter(c => c.suit === suitFilter)
       return allCards
     }
 
-    const pos = spread.positions.find(p => p.id === activePos)
+    const pos = positions.find(p => p.id === activePos)
     if (!pos) return allCards
 
     let pool = allCards
-    if (pos.pool === 'wands') pool = allCards.filter(c => c.suit === 'wands')
-    else if (pos.pool === 'cups') pool = allCards.filter(c => c.suit === 'cups')
-    else if (pos.pool === 'swords') pool = allCards.filter(c => c.suit === 'swords')
-    else if (pos.pool === 'pentacles') pool = allCards.filter(c => c.suit === 'pentacles')
+
+    if (pos.pool === 'all_minor') {
+      // 40 number cards only (no major, no court)
+      pool = allCards.filter(c => c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'court') {
+      // 16 court cards only
+      pool = allCards.filter(c => c.arcana === 'minor' && isCourtCard(c))
+    } else if (pos.pool === 'wands') {
+      pool = allCards.filter(c => c.suit === 'wands' && c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'cups') {
+      pool = allCards.filter(c => c.suit === 'cups' && c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'swords') {
+      pool = allCards.filter(c => c.suit === 'swords' && c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'pentacles') {
+      pool = allCards.filter(c => c.suit === 'pentacles' && c.arcana === 'minor' && !isCourtCard(c))
+    }
+    // 'all' pool keeps all cards as-is
 
     if (suitFilter) pool = pool.filter(c => c.suit === suitFilter)
     return pool
@@ -76,7 +101,7 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
     onSelect(activePos, card, reversed)
     setReversed(false)
     // Auto-advance to next unfilled position
-    const nextPos = spread.positions.find(p => !reading.cards[p.id] && p.id !== activePos)
+    const nextPos = positions.find(p => !reading.cards[p.id] && p.id !== activePos)
     setActivePos(nextPos ? nextPos.id : null)
   }
 
@@ -96,7 +121,7 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
           <button onClick={onBack} className="text-stone-500 text-sm">← 返回</button>
           <div className="text-center">
             <div className="font-semibold text-stone-800 text-sm">{spread.name}</div>
-            <div className="text-xs text-stone-400">{filledCount}/{spread.positions.length} 张</div>
+            <div className="text-xs text-stone-400">{filledCount}/{positions.length} 张</div>
           </div>
           <button
             onClick={onFinish}
@@ -113,7 +138,7 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
 
         {/* Progress dots */}
         <div className="flex justify-center gap-2 mt-3">
-          {spread.positions.map(pos => (
+          {positions.map(pos => (
             <div
               key={pos.id}
               className={`w-2.5 h-2.5 rounded-full transition-colors ${
@@ -132,6 +157,7 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
       <div className="px-4 py-4">
         <SpreadMini
           spread={spread}
+          positions={positions}
           cards={reading.cards}
           activePos={activePos}
           onPosClick={handlePosClick}
@@ -145,16 +171,24 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-semibold text-stone-800">
-                  {spread.positions.find(p => p.id === activePos)?.label}位
+                  {positions.find(p => p.id === activePos)?.label}位
                 </span>
                 <span className="text-stone-400 text-sm ml-2">
-                  {spread.positions.find(p => p.id === activePos)?.desc}
+                  {positions.find(p => p.id === activePos)?.desc}
                 </span>
-                {spread.positions.find(p => p.id === activePos)?.pool !== 'all' && (
-                  <span className="ml-2 text-xs px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full">
-                    仅{SUIT_NAMES[spread.positions.find(p => p.id === activePos)?.pool]}牌组
-                  </span>
-                )}
+                {(() => {
+                  const activePool = positions.find(p => p.id === activePos)?.pool
+                  if (activePool === 'court') {
+                    return <span className="ml-2 text-xs px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full">仅宫廷牌</span>
+                  }
+                  if (activePool && activePool !== 'all' && activePool !== 'all_minor') {
+                    return <span className="ml-2 text-xs px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full">仅{SUIT_NAMES[activePool]}数字牌</span>
+                  }
+                  if (activePool === 'all_minor') {
+                    return <span className="ml-2 text-xs px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full">40张数字牌</span>
+                  }
+                  return null
+                })()}
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <span className={`text-xs font-medium ${reversed ? 'text-purple-600' : 'text-stone-400'}`}>
@@ -182,7 +216,7 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
       )}
 
       {/* Suit Filter Tabs */}
-      {activePos && spread.positions.find(p => p.id === activePos)?.pool === 'all' && (
+      {activePos && positions.find(p => p.id === activePos)?.pool === 'all' && (
         <div className="px-4 mb-3">
           <div className="flex gap-2 overflow-x-auto">
             {[
@@ -226,7 +260,7 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
               <div className="grid grid-cols-3 gap-2">
                 {filteredCards.map(card => {
                   const isSelected = reading.cards[activePos]?.card.id === card.id
-                  const pos = spread.positions.find(p => p.id === activePos)
+                  const pos = positions.find(p => p.id === activePos)
                   const elColor = pos?.element ? ELEMENT_COLORS[pos.element] : 'from-white to-stone-50 border-stone-200'
 
                   return (
@@ -279,51 +313,90 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
 }
 
 // Mini spread visualization
-function SpreadMini({ spread, cards, activePos, onPosClick }) {
-  // For four-element spread, use cross layout
-  const isFourElements = spread.id === 'four-elements'
+function SpreadMini({ spread, cards, positions, activePos, onPosClick }) {
+  const pos = (id) => positions.find(p => p.id === id)
 
-  if (isFourElements) {
-    const pos = (id) => spread.positions.find(p => p.id === id)
-    const core = cards['core']
-    const fire = cards['fire']
-    const air = cards['air']
-    const water = cards['water']
-    const earth = cards['earth']
+  // Four-elements spread: cross layout
+  if (spread.id === 'four-elements') {
+    const isPhase1 = positions.length === 5
+    const wands = cards['wands']
+    const cups = cards['cups']
+    const swords = cards['swords']
+    const pentacles = cards['pentacles']
+    const emphasis = cards['emphasis']
 
+    if (isPhase1) {
+      // Phase 1: 5 cards cross + emphasis center
+      return (
+        <div className="flex flex-col items-center gap-1">
+          {/* Swords (Air) - top */}
+          <SlotButton pos={pos('swords')} card={swords} active={activePos === 'swords'} onClick={() => onPosClick('swords')} />
+          {/* Middle row: Wands (Fire) - Emphasis - Cups (Water) */}
+          <div className="flex items-center gap-2">
+            <SlotButton pos={pos('wands')} card={wands} active={activePos === 'wands'} onClick={() => onPosClick('wands')} />
+            <SlotButton pos={pos('emphasis')} card={emphasis} active={activePos === 'emphasis'} onClick={() => onPosClick('emphasis')} large highlight />
+            <SlotButton pos={pos('cups')} card={cups} active={activePos === 'cups'} onClick={() => onPosClick('cups')} />
+          </div>
+          {/* Pentacles (Earth) - bottom */}
+          <SlotButton pos={pos('pentacles')} card={pentacles} active={activePos === 'pentacles'} onClick={() => onPosClick('pentacles')} />
+        </div>
+      )
+    }
+
+    // Phase 2: 4 cards cross without emphasis
     return (
       <div className="flex flex-col items-center gap-1">
-        {/* Air - top */}
-        <SlotButton pos={pos('air')} card={air} active={activePos === 'air'} onClick={() => onPosClick('air')} />
-        {/* Middle row: Fire - Core - Water */}
+        {/* Swords (Air) - top */}
+        <SlotButton pos={pos('swords')} card={swords} active={activePos === 'swords'} onClick={() => onPosClick('swords')} />
+        {/* Middle row: Wands (Fire) - Cups (Water) */}
         <div className="flex items-center gap-2">
-          <SlotButton pos={pos('fire')} card={fire} active={activePos === 'fire'} onClick={() => onPosClick('fire')} />
-          <SlotButton pos={pos('core')} card={core} active={activePos === 'core'} onClick={() => onPosClick('core')} large />
-          <SlotButton pos={pos('water')} card={water} active={activePos === 'water'} onClick={() => onPosClick('water')} />
+          <SlotButton pos={pos('wands')} card={wands} active={activePos === 'wands'} onClick={() => onPosClick('wands')} />
+          <SlotButton pos={pos('cups')} card={cups} active={activePos === 'cups'} onClick={() => onPosClick('cups')} />
         </div>
-        {/* Earth - bottom */}
-        <SlotButton pos={pos('earth')} card={earth} active={activePos === 'earth'} onClick={() => onPosClick('earth')} />
+        {/* Pentacles (Earth) - bottom */}
+        <SlotButton pos={pos('pentacles')} card={pentacles} active={activePos === 'pentacles'} onClick={() => onPosClick('pentacles')} />
       </div>
     )
   }
 
-  // Salon spread — horizontal layout
+  // Interpersonal mirror spread: 上1下3 layout
+  if (spread.id === 'interpersonal-mirror') {
+    const projection = cards['projection']
+    const detail1 = cards['detail1']
+    const detail2 = cards['detail2']
+    const detail3 = cards['detail3']
+
+    return (
+      <div className="flex flex-col items-center gap-2">
+        {/* Projection card - top center, larger */}
+        <SlotButton pos={pos('projection')} card={projection} active={activePos === 'projection'} onClick={() => onPosClick('projection')} large highlight />
+        {/* Detail cards - bottom row */}
+        <div className="flex items-center gap-2">
+          <SlotButton pos={pos('detail1')} card={detail1} active={activePos === 'detail1'} onClick={() => onPosClick('detail1')} />
+          <SlotButton pos={pos('detail2')} card={detail2} active={activePos === 'detail2'} onClick={() => onPosClick('detail2')} />
+          <SlotButton pos={pos('detail3')} card={detail3} active={activePos === 'detail3'} onClick={() => onPosClick('detail3')} />
+        </div>
+      </div>
+    )
+  }
+
+  // Salon spread — horizontal layout (default)
   return (
     <div className="flex justify-center gap-4">
-      {spread.positions.map(pos => (
+      {positions.map(p => (
         <SlotButton
-          key={pos.id}
-          pos={pos}
-          card={cards[pos.id]}
-          active={activePos === pos.id}
-          onClick={() => onPosClick(pos.id)}
+          key={p.id}
+          pos={p}
+          card={cards[p.id]}
+          active={activePos === p.id}
+          onClick={() => onPosClick(p.id)}
         />
       ))}
     </div>
   )
 }
 
-function SlotButton({ pos, card, active, onClick, large = false }) {
+function SlotButton({ pos, card, active, onClick, large = false, highlight = false }) {
   if (!pos) return null
 
   const elBorder = {
@@ -343,7 +416,9 @@ function SlotButton({ pos, card, active, onClick, large = false }) {
           ? `bg-gradient-to-br ${ELEMENT_COLORS[pos.element || 'earth']} border-solid shadow-sm`
           : active
             ? `border-amber-400 bg-amber-50 border-dashed ring-2 ring-amber-200`
-            : `border-dashed ${pos.element ? elBorder[pos.element] : 'border-stone-300'} bg-white`
+            : highlight
+              ? `border-dashed border-amber-300 bg-amber-50/50`
+              : `border-dashed ${pos.element ? elBorder[pos.element] : 'border-stone-300'} bg-white`
         }
       `}
     >

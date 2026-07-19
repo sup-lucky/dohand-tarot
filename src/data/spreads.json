@@ -1,20 +1,44 @@
 [
   {
     "id": "four-elements",
-    "name": "四元素牌阵",
-    "description": "独创四元素体系，从五个维度洞察你的状态",
+    "name": "植物信念觉察法",
+    "description": "独创四元素体系，从信念入手觉察自我，显化改变",
     "icon": "✦",
-    "modes": ["improve", "state"],
+    "modes": ["phase1", "phase2"],
     "modeLabels": {
-      "improve": "我需要改进什么？",
-      "state": "我目前是什么样的状态？"
+      "phase1": "第一阶段 · 觉察信念",
+      "phase2": "第二阶段 · 解决方法"
+    },
+    "positions_phase1": [
+      { "id": "wands", "label": "权杖", "element": "fire", "pool": "wands", "desc": "行动与热情中的真实现状和信念——我处在什么样的行动状态中" },
+      { "id": "cups", "label": "圣杯", "element": "water", "pool": "cups", "desc": "内心情感的真实底色——我的心里在渴望或逃避什么" },
+      { "id": "swords", "label": "宝剑", "element": "air", "pool": "swords", "desc": "思维与沟通中的认知模式——什么念头或概念在反复影响我" },
+      { "id": "pentacles", "label": "星币", "element": "earth", "pool": "pentacles", "desc": "物质世界的呈现与自我价值假设——我是如何判定自己的价值的" },
+      { "id": "emphasis", "label": "强调牌", "element": null, "pool": "all_minor", "desc": "核心影响元素——哪个方向最为突出，最需要被看见" }
+    ],
+    "positions_phase2": [
+      { "id": "wands", "label": "权杖", "element": "fire", "pool": "wands", "desc": "在行动和热情上，我需要做什么样的调整" },
+      { "id": "cups", "label": "圣杯", "element": "water", "pool": "cups", "desc": "在情感和内心上，我需要怎样的转变" },
+      { "id": "swords", "label": "宝剑", "element": "air", "pool": "swords", "desc": "在思维和沟通上，我要如何改变认知模式" },
+      { "id": "pentacles", "label": "星币", "element": "earth", "pool": "pentacles", "desc": "在物质和现实层面，我该如何调整和行动" }
+    ]
+  },
+  {
+    "id": "interpersonal-mirror",
+    "name": "人际镜像阵",
+    "description": "透过宫廷牌投射与细节牌映照，洞悉人际关系的深层内在看法",
+    "icon": "◎",
+    "modes": ["love", "friendship", "family"],
+    "modeLabels": {
+      "love": "爱情",
+      "friendship": "友情",
+      "family": "亲情"
     },
     "positions": [
-      { "id": "core", "label": "核心", "element": null, "pool": "all", "desc": "最需要注意的核心问题" },
-      { "id": "fire", "label": "火", "element": "fire", "pool": "wands", "desc": "行动力·热情·目的" },
-      { "id": "air", "label": "风", "element": "air", "pool": "swords", "desc": "思维·言语·沟通·逻辑" },
-      { "id": "water", "label": "水", "element": "water", "pool": "cups", "desc": "情感·内心·直觉·潜意识" },
-      { "id": "earth", "label": "土", "element": "earth", "pool": "pentacles", "desc": "经济·物质·金钱·工作" }
+      { "id": "projection", "label": "投射牌", "element": null, "pool": "court", "desc": "对方在我心中的形象——我将他/她投射成了什么样子" },
+      { "id": "detail1", "label": "细节一", "element": null, "pool": "all_minor", "desc": "投射背后的内在信念——我在这段关系中的真实感受" },
+      { "id": "detail2", "label": "细节二", "element": null, "pool": "all_minor", "desc": "关系中的思维模式——我对这段关系的认知框架" },
+      { "id": "detail3", "label": "细节三", "element": null, "pool": "all_minor", "desc": "关系中的行动倾向——我在关系中习惯如何应对" }
     ]
   },
   {

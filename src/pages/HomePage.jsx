@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import spreads from '../data/spreads.json'
+import HerbOracle from '../components/HerbOracle'
 
 export default function HomePage({ onStart }) {
   const [hovered, setHovered] = useState(null)
+  const [showOracle, setShowOracle] = useState(true)
   const [modePick, setModePick] = useState(null) // spread needing mode selection
 
   const handleSpreadClick = (sp) => {
@@ -85,6 +87,8 @@ export default function HomePage({ onStart }) {
         </div>
       </div>
 
+      {/* 每日草药神谕卡 */}
+      {showOracle && <HerbOracle onClose={() => setShowOracle(false)} />}
     </div>
   )
 }
