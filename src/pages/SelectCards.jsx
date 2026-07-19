@@ -34,7 +34,7 @@ const getPositions = (spread, mode) => {
   return spread.positions
 }
 
-export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
+export default function SelectCards({ reading, question, setQuestion, onSelect, onFinish, onBack }) {
   if (!reading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5"
@@ -50,6 +50,67 @@ export default function SelectCards({ reading, onSelect, onFinish, onBack }) {
       <div className="flex flex-col items-center justify-center min-h-screen px-5">
         <p className="text-stone-400">牌阵未找到</p>
         <button onClick={onBack} className="btn-secondary mt-4">返回首页</button>
+      </div>
+    )
+  }
+
+  // Question input phase — shown before card selection
+  const [questionInput, setQuestionInput] = useState(question || '')
+  const [questionPhase, setQuestionPhase] = useState(!question)
+
+  if (questionPhase) {
+    return (
+      <div className="flex flex-col min-h-screen"
+        style={{ background: 'linear-gradient(135deg, #fef9e7 0%, #fdf6e3 20%, #eaf4f0 50%, #f0f4f8 75%, #fdf6e3 100%)' }}>
+        <div className="px-4 py-3 border-b border-stone-200 flex items-center">
+          <button onClick={onBack} className="text-stone-500 text-sm">← 返回</button>
+          <div className="flex-1 text-center">
+            <span className="font-semibold text-stone-800 text-sm">{spread.name}</span>
+          </div>
+          <div className="w-12" />
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          <div className="text-center mb-8">
+            <span className="text-3xl mb-4 block">💭</span>
+            <h2 className="text-lg font-semibold text-stone-700 mb-2">你想探索什么问题？</h2>
+            <p className="text-xs text-stone-400 leading-relaxed">
+              请详细描述你此刻的困惑或想探索的方向<br />
+              越具体，解读越能贴合你的真实情况
+            </p>
+          </div>
+          <textarea
+            value={questionInput}
+            onChange={e => setQuestionInput(e.target.value)}
+            placeholder="例如：我最近在工作上总是感到很焦虑，明明很努力却总觉得自己不够好，我想知道是什么样的信念在影响我…"
+            className="w-full max-w-sm h-36 p-4 rounded-2xl border border-stone-200 bg-white/70 text-sm text-stone-700 placeholder-stone-300 resize-none focus:outline-none focus:border-amber-300 focus:ring-2 focus:ring-amber-100 transition-all"
+            autoFocus
+          />
+          <button
+            onClick={() => {
+              if (questionInput.trim()) {
+                setQuestion(questionInput.trim())
+                setQuestionPhase(false)
+              }
+            }}
+            disabled={!questionInput.trim()}
+            className={`mt-6 px-8 py-3 rounded-full text-sm font-medium transition-all ${
+              questionInput.trim()
+                ? 'bg-amber-500 text-white active:scale-95 shadow-lg shadow-amber-200'
+                : 'bg-stone-200 text-stone-400'
+            }`}
+          >
+            开始抽牌 ✦
+          </button>
+          <button
+            onClick={() => {
+              // Skip question and use pre-written interpretations
+              setQuestionPhase(false)
+            }}
+            className="mt-3 text-xs text-stone-300 active:text-stone-500"
+          >
+            跳过，使用通用解读
+          </button>
+        </div>
       </div>
     )
   }

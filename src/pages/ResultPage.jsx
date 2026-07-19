@@ -1,7 +1,12 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import spreads from '../data/spreads.json'
 import allCards from '../data/cards.json'
 import allHerbs from '../data/herbs.json'
+
+// ============================================================
+// Cloudflare Worker URL — 部署 worker 后把 URL 填到这里
+// ============================================================
+const WORKER_URL = 'https://dohand-tarot.REPLACE-ME.workers.dev'
 
 const ELEMENT_INFO = {
   fire: { emoji: '🔥', name: '火', color: 'text-red-600', bg: 'bg-red-50', desc: '行动·热情·目的' },
@@ -18,9 +23,11 @@ const getPositions = (spread, mode) => {
   return spread.positions
 }
 
-export default function ResultPage({ reading, onRestart, onBack }) {
+export default function ResultPage({ reading, question, onRestart, onBack }) {
   const [selectedHerb, setSelectedHerb] = useState(null)
   const [expandedCard, setExpandedCard] = useState(null)
+  const [aiInterpretation, setAiInterpretation] = useState(null) // null=idle, 'loading'|string|'error'
+  const aiFetched = useRef(false)
 
   if (!reading) {
     return (
@@ -93,6 +100,48 @@ export default function ResultPage({ reading, onRestart, onBack }) {
       meaning: getMeaning(cardData, pos),
     }
   })
+
+  // AI interpretation fetch
+  useEffect(() => {
+    if (!question || aiFetched.current) return
+    aiFetched.current = true
+    setAiInterpretation('loading')
+
+    const cardList = enrichedPositions
+      .filter(p => p.card && p.id !== 'emphasis') // skip emphasis card
+      .map(p => ({
+        position: p.label,
+        positionDesc: p.desc,
+        name: p.card.name_zh,
+        isReversed: p.isReversed,
+      }))
+
+    if (cardList.length === 0) {
+      setAiInterpretation(null)
+      return
+    }
+
+    fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question,
+        cards: cardList,
+        spreadName: spread.name,
+        mode: reading.mode,
+        modeLabel: spread.modeLabels[reading.mode] || reading.mode,
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          setAiInterpretation('error')
+        } else {
+          setAiInterpretation(data.interpretation || '')
+        }
+      })
+      .catch(() => setAiInterpretation('error'))
+  }, [])
 
   // Element analysis (for four-elements spread)
   const elementCount = useMemo(() => {
@@ -192,6 +241,47 @@ export default function ResultPage({ reading, onRestart, onBack }) {
       </div>
 
       <div className="px-4 py-5 space-y-5">
+        {/* AI 个性化解读 */}
+        {aiInterpretation === 'loading' && (
+          <div className="bg-white rounded-2xl border border-amber-200 p-6 text-center">
+            <div className="animate-pulse flex flex-col items-center gap-3">
+              <span className="text-3xl">🔮</span>
+              <p className="text-sm text-stone-600 font-medium">正在根据你的问题生成专属解读…</p>
+              <p className="text-xs text-stone-400">结合牌面与你描述的具体困惑，DeepSeek 正在深度分析中</p>
+              <div className="flex gap-1 mt-2">
+                <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+                <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {aiInterpretation && aiInterpretation !== 'loading' && aiInterpretation !== 'error' && (
+          <div className="bg-white rounded-2xl border border-amber-200 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-lg">🤖</span>
+              <h3 className="font-semibold text-stone-700">AI 深度解读</h3>
+              <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full">基于你的问题</span>
+            </div>
+            {question && (
+              <div className="mb-4 p-3 bg-amber-50 rounded-xl">
+                <span className="text-[10px] text-amber-500 tracking-wider">你的问题</span>
+                <p className="text-sm text-stone-600 mt-1">「{question}」</p>
+              </div>
+            )}
+            <div className="text-sm text-stone-600 leading-relaxed space-y-3 whitespace-pre-line">
+              {aiInterpretation}
+            </div>
+          </div>
+        )}
+
+        {aiInterpretation === 'error' && (
+          <div className="bg-white rounded-2xl border border-stone-200 p-4 text-center">
+            <p className="text-xs text-stone-400">AI 解读暂时不可用，以下为通用解读</p>
+          </div>
+        )}
+
         {/* Element Overview (four-elements spread only) */}
         {spread.id === 'four-elements' && (
           <div className="bg-white rounded-2xl border border-stone-200 p-4">
@@ -266,7 +356,7 @@ export default function ResultPage({ reading, onRestart, onBack }) {
           </h3>
           <div className="space-y-3">
             {enrichedPositions
-              .filter(p => spread.id !== 'interpersonal-mirror' || p.id !== 'projection')
+              .filter(p => (spread.id !== 'interpersonal-mirror' || p.id !== 'projection') && p.id !== 'emphasis')
               .map(pos => {
                 const isExpanded = expandedCard === pos.id
                 const empty = !pos.card

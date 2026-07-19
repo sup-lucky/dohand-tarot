@@ -6,10 +6,12 @@ import ResultPage from './pages/ResultPage'
 
 export default function App() {
   const [reading, setReading] = useState(null)
+  const [question, setQuestion] = useState('')
   const navigate = useNavigate()
 
   const startReading = useCallback((spreadId, mode) => {
     setReading({ spreadId, mode, cards: {} })
+    setQuestion('')
     navigate('/select')
   }, [navigate])
 
@@ -18,13 +20,13 @@ export default function App() {
   }, [])
 
   const finishReading = useCallback(() => navigate('/result'), [navigate])
-  const resetReading = useCallback(() => { setReading(null); navigate('/') }, [navigate])
+  const resetReading = useCallback(() => { setReading(null); setQuestion(''); navigate('/') }, [navigate])
 
   return (
     <Routes>
       <Route path="/" element={<HomePage onStart={startReading} />} />
-      <Route path="/select" element={<SelectCards reading={reading} onSelect={selectCard} onFinish={finishReading} onBack={() => navigate('/')} />} />
-      <Route path="/result" element={<ResultPage reading={reading} onRestart={resetReading} onBack={() => navigate('/select')} />} />
+      <Route path="/select" element={<SelectCards reading={reading} question={question} setQuestion={setQuestion} onSelect={selectCard} onFinish={finishReading} onBack={() => navigate('/')} />} />
+      <Route path="/result" element={<ResultPage reading={reading} question={question} onRestart={resetReading} onBack={() => navigate('/select')} />} />
     </Routes>
   )
 }

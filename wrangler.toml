@@ -1,0 +1,7 @@
+# DO!Hand 塔罗 AI 解读 Worker
+name = "dohand-tarot"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 部署后把下面这行生成的 URL 填到前端 .env
+# 例如: https://dohand-tarot.your-subdomain.workers.dev
