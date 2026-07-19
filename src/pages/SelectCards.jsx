@@ -35,32 +35,55 @@ const getPositions = (spread, mode) => {
 }
 
 export default function SelectCards({ reading, question, setQuestion, onSelect, onFinish, onBack }) {
-  // ALL hooks must be at the top — before any conditional returns
+  // ALL hooks at the top — never after conditional returns
   const [questionInput, setQuestionInput] = useState(question || '')
   const [questionPhase, setQuestionPhase] = useState(!question)
   const [activePos, setActivePos] = useState(null)
   const [reversed, setReversed] = useState(false)
   const [suitFilter, setSuitFilter] = useState(null)
 
-  if (!reading) {
+  // Compute spread & positions (safe for null reading)
+  const spread = reading ? spreads.find(s => s.id === reading.spreadId) : null
+  const positions = spread ? getPositions(spread, reading.mode) : []
+  const filledCount = reading ? Object.keys(reading.cards).length : 0
+  const allFilled = filledCount === positions.length
+
+  // Filter cards based on the active position's pool
+  const filteredCards = useMemo(() => {
+    if (!activePos) return allCards
+    const pos = positions.find(p => p.id === activePos)
+    if (!pos) return allCards
+
+    let pool = allCards
+    if (pos.pool === 'all_minor') {
+      pool = allCards.filter(c => c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'court') {
+      pool = allCards.filter(c => c.arcana === 'minor' && isCourtCard(c))
+    } else if (pos.pool === 'wands') {
+      pool = allCards.filter(c => c.suit === 'wands' && c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'cups') {
+      pool = allCards.filter(c => c.suit === 'cups' && c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'swords') {
+      pool = allCards.filter(c => c.suit === 'swords' && c.arcana === 'minor' && !isCourtCard(c))
+    } else if (pos.pool === 'pentacles') {
+      pool = allCards.filter(c => c.suit === 'pentacles' && c.arcana === 'minor' && !isCourtCard(c))
+    }
+    if (suitFilter) pool = pool.filter(c => c.suit === suitFilter)
+    return pool
+  }, [activePos, suitFilter, positions])
+
+  // Guard: no reading data
+  if (!reading || !spread) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5"
         style={{ background: 'linear-gradient(135deg, #fef9e7 0%, #fdf6e3 20%, #eaf4f0 50%, #f0f4f8 75%, #fdf6e3 100%)' }}>
-        <p className="text-stone-400 text-sm">读取中…</p>
+        <p className="text-stone-400 text-sm">{!reading ? '读取中…' : '牌阵未找到'}</p>
+        {!reading ? null : <button onClick={onBack} className="btn-secondary mt-4">返回首页</button>}
       </div>
     )
   }
 
-  const spread = spreads.find(s => s.id === reading.spreadId)
-  if (!spread) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-5">
-        <p className="text-stone-400">牌阵未找到</p>
-        <button onClick={onBack} className="btn-secondary mt-4">返回首页</button>
-      </div>
-    )
-  }
-
+  // Question input phase — rendered inside main JSX, not as early return
   if (questionPhase) {
     return (
       <div className="flex flex-col min-h-screen"
@@ -105,10 +128,7 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
             开始抽牌 ✦
           </button>
           <button
-            onClick={() => {
-              // Skip question and use pre-written interpretations
-              setQuestionPhase(false)
-            }}
+            onClick={() => setQuestionPhase(false)}
             className="mt-3 text-xs text-stone-300 active:text-stone-500"
           >
             跳过，使用通用解读
@@ -117,45 +137,6 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
       </div>
     )
   }
-
-  const positions = getPositions(spread, reading.mode)
-
-  const filledCount = Object.keys(reading.cards).length
-  const allFilled = filledCount === positions.length
-
-  // Filter cards based on the active position's pool
-  const filteredCards = useMemo(() => {
-    if (!activePos) {
-      // Browse mode — show all cards
-      if (suitFilter) return allCards.filter(c => c.suit === suitFilter)
-      return allCards
-    }
-
-    const pos = positions.find(p => p.id === activePos)
-    if (!pos) return allCards
-
-    let pool = allCards
-
-    if (pos.pool === 'all_minor') {
-      // 40 number cards only (no major, no court)
-      pool = allCards.filter(c => c.arcana === 'minor' && !isCourtCard(c))
-    } else if (pos.pool === 'court') {
-      // 16 court cards only
-      pool = allCards.filter(c => c.arcana === 'minor' && isCourtCard(c))
-    } else if (pos.pool === 'wands') {
-      pool = allCards.filter(c => c.suit === 'wands' && c.arcana === 'minor' && !isCourtCard(c))
-    } else if (pos.pool === 'cups') {
-      pool = allCards.filter(c => c.suit === 'cups' && c.arcana === 'minor' && !isCourtCard(c))
-    } else if (pos.pool === 'swords') {
-      pool = allCards.filter(c => c.suit === 'swords' && c.arcana === 'minor' && !isCourtCard(c))
-    } else if (pos.pool === 'pentacles') {
-      pool = allCards.filter(c => c.suit === 'pentacles' && c.arcana === 'minor' && !isCourtCard(c))
-    }
-    // 'all' pool keeps all cards as-is
-
-    if (suitFilter) pool = pool.filter(c => c.suit === suitFilter)
-    return pool
-  }, [activePos, suitFilter])
 
   const handleCardSelect = (card) => {
     if (!activePos) return
