@@ -35,6 +35,13 @@ const getPositions = (spread, mode) => {
 }
 
 export default function SelectCards({ reading, question, setQuestion, onSelect, onFinish, onBack }) {
+  // ALL hooks must be at the top — before any conditional returns
+  const [questionInput, setQuestionInput] = useState(question || '')
+  const [questionPhase, setQuestionPhase] = useState(!question)
+  const [activePos, setActivePos] = useState(null)
+  const [reversed, setReversed] = useState(false)
+  const [suitFilter, setSuitFilter] = useState(null)
+
   if (!reading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5"
@@ -53,10 +60,6 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
       </div>
     )
   }
-
-  // Question input phase — shown before card selection
-  const [questionInput, setQuestionInput] = useState(question || '')
-  const [questionPhase, setQuestionPhase] = useState(!question)
 
   if (questionPhase) {
     return (
@@ -116,9 +119,6 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
   }
 
   const positions = getPositions(spread, reading.mode)
-  const [activePos, setActivePos] = useState(null)
-  const [reversed, setReversed] = useState(false)
-  const [suitFilter, setSuitFilter] = useState(null)
 
   const filledCount = Object.keys(reading.cards).length
   const allFilled = filledCount === positions.length
