@@ -3,10 +3,13 @@ import spreads from '../data/spreads.json'
 import allCards from '../data/cards.json'
 import allHerbs from '../data/herbs.json'
 
-// ============================================================
-// Cloudflare Worker URL — 部署 worker 后把 URL 填到这里
-// ============================================================
-const WORKER_URL = 'https://dohand-tarot.REPLACE-ME.workers.dev'
+// DeepSeek API 配置
+// API Key 在项目根目录 .env 文件中设置: VITE_DEEPSEEK_API_KEY=sk-xxx
+const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || ''
+// 开发环境用 Vite proxy，生产环境用 API 直连
+const DEEPSEEK_URL = import.meta.env.DEV
+  ? '/api/deepseek/v1/chat/completions'
+  : 'https://api.deepseek.com/v1/chat/completions'
 
 const ELEMENT_INFO = {
   fire: { emoji: '🔥', name: '火', color: 'text-red-600', bg: 'bg-red-50', desc: '行动·热情·目的' },
@@ -121,26 +124,57 @@ export default function ResultPage({ reading, question, onRestart, onBack }) {
       return
     }
 
-    fetch(WORKER_URL, {
+    // Build prompt
+    const cardDescriptions = cardList.map((c, i) =>
+      `第${i + 1}张：【${c.position}】${c.name}（${c.isReversed ? '逆位' : '正位'}）——牌位含义：${c.positionDesc}`
+    ).join('\n')
+
+    const systemPrompt = `你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力，以「自我觉察」和「信念显化」为核心。
+
+核心理念：帮助客户看见自己当下的信念和认知模式。每一张牌都是客户内在状态的镜子——反映的是他们此刻持有什么样的想法、情绪、假设，才显化出了当前的生活境遇。解读目的是帮助客户找到「核心信念」——那个一直在无意识中驱动他们行为、情绪和选择的底层设定。语言要像朋友聊天——真诚、有温度、不玄乎。
+
+${spread.name === '植物信念觉察法' ? `
+牌阵：植物信念觉察法（${spread.modeLabels[reading.mode]}）
+${reading.mode === 'phase1' ? '核心问题：「我现在持有什么样的信念/状态导致现在的情况发生？」帮助客户从四元素方向看清内在信念。' : '核心问题：「每一种元素对应的解决方法是什么？」帮助客户找到每个方向的具体改变方式。'}
+四元素方向：权杖=行动与热情中的真实信念，圣杯=内心情感底色与渴望，宝剑=思维与沟通中的认知模式，星币=物质呈现与自我价值假设。
+` : spread.name === '人际镜像阵' ? `
+牌阵：人际镜像阵（${spread.modeLabels[reading.mode]}）
+核心问题：「我对这段关系的深层内在看法是什么？」投射牌=客户把对方投射成了什么样子，三张细节牌=从不同维度映照内在信念。
+` : `牌阵：沙龙牌阵。帮助客户看清现状和改进方向。`}
+
+请按每张牌的顺序解读，紧密结合客户的具体问题展开。每段150-250字，温暖真诚。最后加一段「核心信念提示」：2-3句话总结客户最需要觉察到的深层信念。`
+
+    const userMessage = `我的问题是：${question}\n\n我抽到的牌：\n${cardDescriptions}\n\n请为我详细解读。`
+
+    fetch(DEEPSEEK_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+      },
       body: JSON.stringify({
-        question,
-        cards: cardList,
-        spreadName: spread.name,
-        mode: reading.mode,
-        modeLabel: spread.modeLabels[reading.mode] || reading.mode,
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+        temperature: 0.7,
+        max_tokens: 4096,
       }),
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          setAiInterpretation('error')
-        } else {
-          setAiInterpretation(data.interpretation || '')
-        }
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
       })
-      .catch(() => setAiInterpretation('error'))
+      .then(data => {
+        const text = data.choices?.[0]?.message?.content || ''
+        if (!text) throw new Error('Empty response')
+        setAiInterpretation(text)
+      })
+      .catch(err => {
+        console.warn('DeepSeek API 调用失败:', err.message)
+        setAiInterpretation('error')
+      })
   }, [])
 
   // Element analysis (for four-elements spread)
