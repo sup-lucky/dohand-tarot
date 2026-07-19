@@ -232,26 +232,28 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
                   return null
                 })()}
               </div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <span className={`text-xs font-medium ${reversed ? 'text-purple-600' : 'text-stone-400'}`}>
-                  正位
-                </span>
+              <div className="flex items-center gap-1.5">
                 <button
-                  onClick={() => setReversed(!reversed)}
-                  className={`relative w-10 h-5 rounded-full transition-colors ${
-                    reversed ? 'bg-purple-400' : 'bg-stone-300'
+                  onClick={() => setReversed(false)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    !reversed
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'bg-stone-100 text-stone-400'
                   }`}
                 >
-                  <span
-                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                      reversed ? 'translate-x-5' : 'translate-x-0.5'
-                    }`}
-                  />
+                  正位
                 </button>
-                <span className={`text-xs font-medium ${reversed ? 'text-stone-400' : 'text-purple-600'}`}>
+                <button
+                  onClick={() => setReversed(true)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    reversed
+                      ? 'bg-purple-500 text-white shadow-sm'
+                      : 'bg-stone-100 text-stone-400'
+                  }`}
+                >
                   逆位
-                </span>
-              </label>
+                </button>
+              </div>
             </div>
           </div>
         </div>

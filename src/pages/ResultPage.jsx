@@ -28,7 +28,6 @@ const getPositions = (spread, mode) => {
 
 export default function ResultPage({ reading, question, onRestart, onBack }) {
   const [selectedHerb, setSelectedHerb] = useState(null)
-  const [expandedCard, setExpandedCard] = useState(null)
   const [aiInterpretation, setAiInterpretation] = useState(null) // null=idle, 'loading'|string|'error'
   const aiFetched = useRef(false)
 
@@ -378,85 +377,6 @@ ${reading.mode === 'phase1' ? '核心问题：「我现在持有什么样的信�
             </div>
           )
         })()}
-
-        {/* Card Interpretations */}
-        <div>
-          <h3 className="font-semibold text-stone-700 mb-3">
-            {spread.id === 'four-elements'
-              ? (mode === 'phase1' ? '🌱 信念觉察解读' : '💡 解决方法解读')
-              : spread.id === 'interpersonal-mirror'
-                ? '🔍 细节牌 · 内在信念映照'
-                : '牌面解读'}
-          </h3>
-          <div className="space-y-3">
-            {enrichedPositions
-              .filter(p => (spread.id !== 'interpersonal-mirror' || p.id !== 'projection') && p.id !== 'emphasis')
-              .map(pos => {
-                const isExpanded = expandedCard === pos.id
-                const empty = !pos.card
-
-                return (
-                  <div
-                    key={pos.id}
-                    className={`bg-white rounded-2xl border transition-all ${
-                      isExpanded ? 'border-amber-300 shadow-md' : 'border-stone-200'
-                    }`}
-                  >
-                    {/* Card Header */}
-                    <button
-                      onClick={() => setExpandedCard(isExpanded ? null : pos.id)}
-                      className="w-full p-4 flex items-center gap-3 text-left"
-                    >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
-                        pos.element ? ELEMENT_INFO[pos.element].bg : 'bg-stone-100'
-                      }`}>
-                        {pos.element ? ELEMENT_INFO[pos.element].emoji : (pos.id === 'emphasis' ? '✦' : '🪞')}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-stone-800">
-                            {empty ? '待抽牌' : pos.card.name_zh}
-                          </span>
-                          {pos.isReversed && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded-full">逆位</span>
-                          )}
-                          {!empty && pos.card.element && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-stone-100 text-stone-500 rounded-full">
-                              {ELEMENT_INFO[pos.card.element]?.emoji} {ELEMENT_INFO[pos.card.element]?.name}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-stone-400">
-                          {pos.label}位 · {pos.desc}
-                        </div>
-                      </div>
-                      {!empty && (
-                        <svg className={`w-5 h-5 text-stone-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      )}
-                    </button>
-
-                    {/* Card Meaning */}
-                    {isExpanded && pos.meaning && (
-                      <div className="px-4 pb-4 border-t border-stone-100 pt-3">
-                        <div className="flex gap-2 mb-2">
-                          {pos.card.keywords.map((kw, i) => (
-                            <span key={i} className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full">
-                              {kw}
-                            </span>
-                          ))}
-                        </div>
-                        <p className="text-sm text-stone-600 leading-relaxed">
-                          {pos.meaning}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-          </div>
-        </div>
 
         {/* Herb Recommendations */}
         <div>
