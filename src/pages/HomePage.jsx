@@ -85,6 +85,15 @@ export default function HomePage({ onStart }) {
         </div>
       </div>
 
+      {/* 底部品牌标识 */}
+      <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-2 z-10">
+        <span className="text-sm tracking-[0.05em] text-stone-400"
+          style={{ fontFamily: `"Arial Black", "Helvetica Neue", Arial, sans-serif`, fontWeight: 900 }}>
+          DO!<span style={{ color: '#b8a88a' }}>Hand</span>
+        </span>
+        <span className="text-[10px] tracking-[0.15em] text-stone-300">内部学员使用</span>
+      </div>
+
     </div>
   )
 }

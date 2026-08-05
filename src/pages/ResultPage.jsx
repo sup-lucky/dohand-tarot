@@ -392,9 +392,19 @@ ${reading.mode === 'phase1' ? '核心问题：「我现在持有什么样的信�
           )}
 
           <div className="space-y-3">
-            {enrichedPositions.filter(p => p.card).map(pos => {
-              const cardHerbs = herbRecommendations.filter(h => h.forCard?.id === pos.card.id)
-              if (cardHerbs.length === 0) return null
+            {(() => {
+              // Sort positions: emphasis-element herbs first
+              const sorted = [...enrichedPositions].sort((a, b) => {
+                const aHerbs = herbRecommendations.filter(h => h.forCard?.id === a.card?.id)
+                const bHerbs = herbRecommendations.filter(h => h.forCard?.id === b.card?.id)
+                if (!emphasisElement) return 0
+                const aMatch = aHerbs.some(h => h.herb.element === emphasisElement) ? 0 : 1
+                const bMatch = bHerbs.some(h => h.herb.element === emphasisElement) ? 0 : 1
+                return aMatch - bMatch
+              })
+              return sorted.filter(p => p.card).map(pos => {
+                const cardHerbs = herbRecommendations.filter(h => h.forCard?.id === pos.card.id)
+                if (cardHerbs.length === 0) return null
               return (
                 <div key={pos.id} className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
                   <div className="px-4 py-3 bg-stone-50 border-b border-stone-100 flex items-center gap-2">
@@ -437,7 +447,7 @@ ${reading.mode === 'phase1' ? '核心问题：「我现在持有什么样的信�
                   </div>
                 </div>
               )
-            })}
+            })})()}
           </div>
         </div>
 
@@ -503,6 +513,15 @@ ${reading.mode === 'phase1' ? '核心问题：「我现在持有什么样的信�
           </div>
         </div>
       )}
+
+      {/* 底部品牌标识 */}
+      <div className="flex flex-col items-center gap-2 py-6 mt-4">
+        <span className="text-sm tracking-[0.05em] text-stone-400"
+          style={{ fontFamily: `"Arial Black", "Helvetica Neue", Arial, sans-serif`, fontWeight: 900 }}>
+          DO!<span style={{ color: '#b8a88a' }}>Hand</span>
+        </span>
+        <span className="text-[10px] tracking-[0.15em] text-stone-300">内部学员使用</span>
+      </div>
     </div>
   )
 }
