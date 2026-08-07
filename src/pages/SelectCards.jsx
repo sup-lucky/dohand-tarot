@@ -132,10 +132,10 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setReversed(false)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium"
-                  style={!reversed ? {background:'#8abfa0',color:'#fff'} : {background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.3)'}}>正位</button>
+                  style={!reversed ? {background:'#8abfa0',color:'#fff'} : {background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.6)'}}>正位</button>
                 <button onClick={() => setReversed(true)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium"
-                  style={reversed ? {background:'rgba(168,85,247,0.45)',color:'#fff'} : {background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.3)'}}>逆位</button>
+                  style={reversed ? {background:'rgba(168,85,247,0.45)',color:'#fff'} : {background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.6)'}}>逆位</button>
               </div>
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
 
       <div className="px-4 flex-1">
         {!activePos ? (
-          <div className="flex flex-col items-center justify-center py-12 text-white/45">
+          <div className="flex flex-col items-center justify-center py-12 text-white/70">
             <p className="text-base mb-1">点击上方牌阵中的一个位置</p>
             <p className="text-sm">然后选择你抽到的牌</p>
           </div>
