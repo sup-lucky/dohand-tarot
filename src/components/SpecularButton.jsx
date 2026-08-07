@@ -96,7 +96,8 @@ const SpecularButton = ({
     const fx = fxRef.current;
     if (!btn || !fx) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    try {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2); // cap DPR for perf
     const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true, dpr });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -209,6 +210,10 @@ const SpecularButton = ({
       if (gl.canvas.parentNode === fx) fx.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
+    } catch (e) {
+      // WebGL unavailable — CSS fallback handles the visual
+      console.warn('SpecularButton: WebGL init failed, using CSS fallback', e.message);
+    }
   }, []);
 
   return (
