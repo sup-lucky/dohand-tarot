@@ -54,7 +54,7 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
         </div>
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <h2 className="text-lg font-semibold text-white mb-2">你想探索什么问题？</h2>
-          <p className="text-xs text-white/65 mb-6 text-center">越具体，解读越能贴合你的真实情况</p>
+          <p className="text-xs text-white/80 mb-6 text-center">越具体，解读越能贴合你的真实情况</p>
           <textarea value={questionInput} onChange={e => setQuestionInput(e.target.value)}
             placeholder="例如：我最近在工作上总是感到很焦虑…"
             className="w-full max-w-sm h-36 p-4 rounded-2xl text-sm text-white placeholder-white/25 resize-none glass-input"
@@ -62,11 +62,11 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
           <button onClick={() => { if (questionInput.trim()) { setQuestion(questionInput.trim()); setQuestionPhase(false) } }}
             disabled={!questionInput.trim()}
             className={`mt-6 px-8 py-3 rounded-full text-sm font-medium ${
-              questionInput.trim() ? 'glass-btn' : 'bg-white/8 border border-white/10 text-white/40'
+              questionInput.trim() ? 'glass-btn' : 'bg-white/12 border border-white/15 text-white/55'
             }`} style={{width:'auto'}}>
             开始抽牌
           </button>
-          <button onClick={() => setQuestionPhase(false)} className="mt-3 text-xs text-white/50 active:text-white/70">
+          <button onClick={() => setQuestionPhase(false)} className="mt-3 text-xs text-white/60 active:text-white/80">
             跳过，使用通用解读
           </button>
         </div>
@@ -94,7 +94,7 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
           </div>
           <button onClick={onFinish} disabled={!allFilled}
             className={`text-sm font-medium px-4 py-1.5 rounded-full ${
-              allFilled ? 'glass-btn' : 'bg-white/8 border border-white/8 text-white/40'
+              allFilled ? 'glass-btn' : 'bg-white/10 border border-white/12 text-white/50'
             }`} style={{width:'auto'}}>
             查看解读
           </button>
@@ -183,8 +183,8 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
                 <button key={card.id} onClick={() => handleCardSelect(card)}
                   className="relative p-2 rounded-xl border text-left active:scale-95 transition-transform"
                   style={{
-                    background: isSelected ? ec.bg : 'rgba(255,255,255,0.04)',
-                    borderColor: isSelected ? ec.border : 'rgba(255,255,255,0.08)',
+                    background: isSelected ? ec.bg : 'rgba(255,255,255,0.07)',
+                    borderColor: isSelected ? ec.border : 'rgba(255,255,255,0.22)',
                     borderWidth: isSelected ? 2 : 1,
                   }}>
                   {card.element && (
@@ -194,10 +194,10 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
                     </span>
                   )}
                   <div className="text-xs font-bold text-white leading-tight mt-1">{card.name_zh}</div>
-                  <div className="text-[10px] text-white/45 mt-0.5">{card.name_en}</div>
+                  <div className="text-[10px] text-white/55 mt-0.5">{card.name_en}</div>
                   <div className="flex flex-wrap gap-1 mt-1.5">
                     {card.keywords.slice(0, 2).map((kw, i) => (
-                      <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/8 text-white/50">{kw}</span>
+                      <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full text-white/60" style={{background:'rgba(255,255,255,0.14)'}}>{kw}</span>
                     ))}
                   </div>
                   {isSelected && (
@@ -259,30 +259,40 @@ function SpreadMini({ spread, cards, positions, activePos, onPosClick }) {
 
 function Slot({ pos, card, active, onClick, large, highlight }) {
   if (!pos) return null
-  const el = pos.element || 'earth'
-  const elBg = { fire:'rgba(254,100,80,0.08)', water:'rgba(80,140,240,0.08)', air:'rgba(100,180,240,0.08)', earth:'rgba(60,180,100,0.08)' }
-  const elBd = { fire:'rgba(254,100,80,0.3)', water:'rgba(80,140,240,0.3)', air:'rgba(100,180,240,0.3)', earth:'rgba(60,180,100,0.3)' }
 
-  let bg, border, borderW = 1
-  if (card) { bg = elBg[el]; border = elBd[el] }
-  else if (active) { bg = 'rgba(138,191,160,0.06)'; border = 'rgba(138,191,160,0.45)'; borderW = 2 }
-  else if (highlight) { bg = 'rgba(138,191,160,0.04)'; border = 'rgba(138,191,160,0.2)' }
-  else { bg = 'rgba(255,255,255,0.03)'; border = 'rgba(255,255,255,0.08)' }
+  // White solid background for slot buttons
+  let bg = 'rgba(255,255,255,0.92)'
+  let border = 'rgba(255,255,255,0.3)'
+  let borderW = 1
+  let textColor = '#333'
+
+  if (card) {
+    bg = 'rgba(255,255,255,0.85)'
+    border = 'rgba(138,191,160,0.5)'
+    textColor = '#333'
+  } else if (active) {
+    bg = '#fff'
+    border = '#8abfa0'
+    borderW = 2
+  } else if (highlight) {
+    bg = 'rgba(255,255,255,0.88)'
+    border = 'rgba(138,191,160,0.35)'
+  }
 
   return (
     <button onClick={onClick}
       className={`flex flex-col items-center justify-center rounded-xl transition-all ${large ? 'w-20 h-20' : 'w-16 h-16'}`}
-      style={{ background: bg, borderColor: border, borderStyle: card ? 'solid' : 'dashed', borderWidth: borderW }}>
+      style={{ background: bg, borderColor: border, borderStyle: 'dashed', borderWidth: borderW }}>
       {card ? (
         <>
-          <span className="text-lg">{card.isReversed ? '🔄' : card.card.name_zh.slice(0, 2)}</span>
-          {card.isReversed && <span className="text-[9px] text-purple-400/70 mt-0.5">逆位</span>}
-          <span className="text-[10px] text-white/55 mt-0.5">{pos.label}</span>
+          <span className="text-lg" style={{color:textColor}}>{card.isReversed ? '🔄' : card.card.name_zh.slice(0, 2)}</span>
+          {card.isReversed && <span className="text-[9px] text-purple-500 mt-0.5">逆位</span>}
+          <span className="text-[10px] mt-0.5" style={{color:'#555'}}>{pos.label}</span>
         </>
       ) : (
         <>
-          <span className="text-lg text-white/12">+</span>
-          <span className="text-[10px] text-white/45 mt-0.5">{pos.label}</span>
+          <span className="text-lg" style={{color:'#bbb'}}>+</span>
+          <span className="text-[10px] mt-0.5" style={{color:'#777'}}>{pos.label}</span>
         </>
       )}
     </button>
