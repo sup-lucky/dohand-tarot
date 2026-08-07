@@ -101,4 +101,14 @@
     opacity: 0.4;
     cursor: not-allowed;
   }
+
+  /* SpecularButton CSS fallback — visible even if WebGL fails */
+  .specular-button {
+    background: oklch(22% 0.01 90 / 0.55) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .specular-button:hover {
+    background: oklch(28% 0.015 90 / 0.6) !important;
+  }
 }
