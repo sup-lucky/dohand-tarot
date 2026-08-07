@@ -5,12 +5,20 @@ import SelectCards from './pages/SelectCards'
 import ResultPage from './pages/ResultPage'
 import AuthGate, { getSession } from './components/AuthGate'
 
+// 背景图 — import 确保 dev 和 production 路径都正确
+import bgImage from '/IMG_8608.jpeg'
+
 export default function App() {
   const [reading, setReading] = useState(null)
   const [question, setQuestion] = useState('')
   const [authed, setAuthed] = useState(false)
   const [checking, setChecking] = useState(true)
   const navigate = useNavigate()
+
+  // 设置全局背景图
+  useEffect(() => {
+    document.documentElement.style.setProperty('--bg-image', `url(${bgImage})`)
+  }, [])
 
   // 检查是否有有效登录态
   useEffect(() => {

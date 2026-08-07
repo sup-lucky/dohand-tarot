@@ -4,64 +4,101 @@
 
 @layer base {
   body {
-    @apply bg-stone-50 text-stone-800 antialiased;
-    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    @apply antialiased;
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: clip;
+    /* Background set via --bg-image CSS variable from App.jsx */
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff;
+  }
+
+  /* Dark veil overlay for text readability on any background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: oklch(0% 0 0 / 0.2);
+    pointer-events: none;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
+/* ═══════════════════════════════════════════
+   GLASS INPUT — transparent input fields
+   ═══════════════════════════════════════════ */
 @layer components {
-  .card-grid {
-    @apply grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3;
+  .glass-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid oklch(100% 0 0 / 0.2);
+    border-radius: 12px;
+    background: oklch(100% 0 0 / 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: inherit;
+    font-size: 15px;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .card-item {
-    @apply relative rounded-xl border-2 border-stone-200 bg-white p-2
-           active:scale-95 transition-transform cursor-pointer
-           hover:border-amber-400 hover:shadow-md;
+  .glass-input::placeholder {
+    color: oklch(90% 0.01 90 / 0.35);
   }
 
-  .card-item.selected {
-    @apply border-amber-500 bg-amber-50 shadow-lg ring-2 ring-amber-300;
+  .glass-input:focus {
+    border-color: oklch(82% 0.04 162);
+    box-shadow: 0 0 0 4px oklch(62% 0.065 165 / 0.12);
   }
 
-  .card-item.reversed-card {
-    @apply rotate-180;
+  .glass-input.error {
+    border-color: oklch(52% 0.14 20);
   }
 
-  .element-fire {
-    @apply bg-red-50 border-red-200 text-red-800;
+  /* Glass button — same style as inputs */
+  .glass-btn {
+    width: 100%;
+    padding: 14px 28px;
+    border: 1px solid oklch(100% 0 0 / 0.2);
+    border-radius: 12px;
+    background: oklch(100% 0 0 / 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.3s ease, background 0.3s ease;
   }
 
-  .element-water {
-    @apply bg-blue-50 border-blue-200 text-blue-800;
+  .glass-btn:hover {
+    border-color: oklch(100% 0 0 / 0.35);
+    background: oklch(100% 0 0 / 0.12);
   }
 
-  .element-air {
-    @apply bg-sky-50 border-sky-200 text-sky-800;
+  .glass-btn:active {
+    transform: scale(0.97);
   }
 
-  .element-earth {
-    @apply bg-green-50 border-green-200 text-green-800;
-  }
-
-  .btn-primary {
-    @apply bg-amber-600 text-white px-6 py-3 rounded-full font-medium
-           active:bg-amber-700 transition-colors shadow-lg shadow-amber-200
-           disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .btn-secondary {
-    @apply bg-white text-stone-700 px-6 py-3 rounded-full font-medium
-           border-2 border-stone-200 active:bg-stone-50 transition-colors;
-  }
-
-  .spread-slot {
-    @apply border-2 border-dashed border-stone-300 rounded-xl p-4
-           flex flex-col items-center justify-center min-h-[100px]
-           cursor-pointer hover:border-amber-400 transition-colors;
-  }
-
-  .spread-slot.filled {
-    @apply border-solid border-amber-400 bg-amber-50;
+  .glass-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DO!Hand · 塔罗四元素 × 植物草药指引</title>
+<style>
+/* Hallmark · macrostructure: Centered Portal · tone: soft-healing-luxury-minimal
+ * SpecularButton: WebGL shader-based specular highlight
+ * pre-emit critique: P5 H5 E5 S5 R5 V5 */
+
+:root {
+  --color-error: oklch(52% 0.14 20);
+  --font-body: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --text-xs: 0.6875rem; --text-sm: 0.8125rem; --text-base: 0.9375rem; --text-lg: 1.0625rem;
+  --text-display: 4.5rem;
+  --space-xs: 0.5rem; --space-sm: 0.75rem; --space-md: 1rem; --space-lg: 1.5rem;
+  --space-xl: 2rem; --space-2xl: 3rem; --space-3xl: 4.5rem;
+  --radius-md: 12px; --radius-xl: 28px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms; --dur-normal: 400ms; --dur-slow: 700ms; --dur-reveal: 900ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x: clip; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body {
+  font-family: var(--font-body); font-size: var(--text-base); line-height: 1.6;
+  color: #fff;
+  min-height: 100vh; min-height: 100dvh; overflow-x: clip;
+  background-image: url('public/IMG_8608.jpeg');
+  background-size: cover; background-position: center;
+  background-repeat: no-repeat; background-attachment: fixed;
+}
+
+/* ── Subtle dark veil for text readability ── */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0;
+  background: oklch(0% 0 0 / 0.2); pointer-events: none;
+}
+
+/* ── Cursor glow ── */
+.cursor-glow {
+  position: fixed; pointer-events: none; z-index: 0;
+  width: 520px; height: 520px; border-radius: 50%;
+  background: radial-gradient(circle at center,
+    oklch(90% 0.03 90 / 0.06) 0%, oklch(90% 0.02 85 / 0.02) 35%, transparent 65%);
+  transform: translate(-50%, -50%);
+  transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              top  0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: left, top;
+}
+
+/* ── Screens ── */
+.screen {
+  position: fixed; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: var(--space-3xl) var(--space-xl);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out),
+              filter var(--dur-slow) var(--ease-out);
+}
+
+/* ═══════ AUTH SCREEN — no card, just floating form ═══════ */
+#authScreen { z-index: 10; }
+#authScreen.hidden { opacity: 0; pointer-events: none; filter: blur(8px); transform: scale(0.97); }
+
+.auth-area {
+  width: 100%; max-width: 340px;
+  display: flex; flex-direction: column; align-items: center;
+  animation: cardReveal var(--dur-reveal) var(--ease-out) both;
+}
+@keyframes cardReveal { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Logo: clean bold sans-serif (黑体) */
+.auth-logo {
+  font-family: "Arial Black", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin-bottom: var(--space-sm);
+}
+.auth-logo span { color: oklch(82% 0.04 162); }
+
+.auth-tagline {
+  font-size: 10px; letter-spacing: 0.22em;
+  color: oklch(95% 0.01 90 / 0.9);
+  text-shadow: 0 1px 4px oklch(0% 0 0 / 0.4);
+  margin-bottom: var(--space-2xl);
+}
+
+/* Form fields */
+.auth-form { width: 100%; }
+.field-group { margin-bottom: var(--space-md); }
+.field-label {
+  display: block; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.06em; color: oklch(90% 0.01 90 / 0.7); margin-bottom: 6px;
+}
+.field-input {
+  width: 100%; padding: 13px 16px;
+  border: 1px solid oklch(100% 0 0 / 0.2); border-radius: var(--radius-md);
+  background: oklch(100% 0 0 / 0.08); backdrop-filter: blur(8px);
+  font-family: var(--font-body); font-size: 15px; color: #fff; outline: none;
+  transition: border-color var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out);
+}
+.field-input::placeholder { color: oklch(90% 0.01 90 / 0.35); }
+.field-input:focus {
+  border-color: oklch(82% 0.04 162);
+  box-shadow: 0 0 0 4px oklch(62% 0.065 165 / 0.15);
+}
+.field-input.error { border-color: var(--color-error); }
+.field-hint { display: none; font-size: 11px; color: oklch(65% 0.15 20); margin-top: 4px; padding-left: 2px; }
+.field-input.error ~ .field-hint { display: block; }
+
+/* Button wrapper */
+.specular-btn-wrap { width: 100%; margin-top: var(--space-sm); }
+
+/* SpecularButton CSS fallback — visible even if WebGL fails */
+.specular-btn-wrap button {
+  background: oklch(48% 0.07 163) !important;
+  box-shadow: 0 2px 16px oklch(0% 0 0 / 0.3), inset 0 1px 0 oklch(100% 0 0 / 0.08);
+}
+.specular-btn-wrap button:hover {
+  background: oklch(44% 0.075 165) !important;
+  box-shadow: 0 4px 24px oklch(0% 0 0 / 0.4), inset 0 1px 0 oklch(100% 0 0 / 0.12);
+}
+
+/* ═══════ COVER SCREEN ═══════ */
+#coverScreen { z-index: 5; opacity: 0; pointer-events: none; filter: blur(12px); transform: scale(1.03); }
+#coverScreen.visible {
+  opacity: 1; pointer-events: auto; filter: blur(0); transform: scale(1);
+  transition: opacity var(--dur-reveal) var(--ease-out), filter var(--dur-reveal) var(--ease-out), transform var(--dur-reveal) var(--ease-out);
+}
+
+.cover-top-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 18px; border: 1px solid oklch(100% 0 0 / 0.12);
+  border-radius: 9999px;
+  background: oklch(16% 0.01 90 / 0.35);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  margin-bottom: var(--space-3xl);
+  animation: fadeUp var(--dur-reveal) 0.15s var(--ease-out) both;
+}
+.cover-top-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: oklch(82% 0.04 162); opacity: 0.7; }
+.cover-top-tag-text { font-size: 9.5px; letter-spacing: 0.28em; color: oklch(85% 0.01 90); font-weight: 500; }
+
+.cover-hero { text-align: center; margin-bottom: var(--space-3xl); animation: fadeUp var(--dur-reveal) 0.25s var(--ease-out) both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.cover-logo {
+  font-family: "Arial Black", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-weight: 900; font-size: var(--text-display); line-height: 1.08;
+  letter-spacing: -0.015em; color: #fff;
+}
+.cover-logo span { color: oklch(82% 0.04 162); }
+.cover-sub { margin-top: var(--space-lg); font-size: var(--text-sm); letter-spacing: 0.22em; color: oklch(95% 0.01 90 / 0.9); text-shadow: 0 1px 4px oklch(0% 0 0 / 0.4); }
+.cover-line { display: block; width: 1px; height: 40px; margin: var(--space-xl) auto 0; background: linear-gradient(to bottom, oklch(100% 0 0 / 0.25), transparent); }
+
+.spreads {
+  display: flex; gap: var(--space-lg); flex-wrap: wrap;
+  justify-content: center; max-width: 780px; width: 100%;
+}
+.spread-btn-wrap {
+  flex: 1 1 220px; max-width: 255px; min-width: 190px;
+  animation: fadeUp var(--dur-reveal) var(--delay, 0.35s) var(--ease-out) both;
+}
+/* Spread button CSS fallback */
+.spread-btn-wrap button {
+  background: oklch(22% 0.01 90 / 0.55) !important;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px oklch(0% 0 0 / 0.2), inset 0 1px 0 oklch(100% 0 0 / 0.05);
+}
+.spread-btn-wrap button:hover {
+  background: oklch(28% 0.015 90 / 0.6) !important;
+  box-shadow: 0 8px 32px oklch(0% 0 0 / 0.3), inset 0 1px 0 oklch(100% 0 0 / 0.08);
+  transform: translateY(-4px);
+}
+.spread-btn-wrap:nth-child(1) { --delay: 0.35s; }
+.spread-btn-wrap:nth-child(2) { --delay: 0.45s; }
+.spread-btn-wrap:nth-child(3) { --delay: 0.55s; }
+
+.specular-spread-label { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.specular-spread-label .title {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+  font-size: var(--text-lg); font-weight: 600; letter-spacing: 0.04em;
+}
+.specular-spread-label .sub {
+  font-family: var(--font-body); font-size: var(--text-xs); font-weight: 400; letter-spacing: 0.06em; opacity: 0.6;
+}
+
+/* Footer — one line horizontal */
+.footer-brand {
+  position: fixed; bottom: var(--space-2xl); left: 0; right: 0; text-align: center; z-index: 2;
+  display: flex; align-items: baseline; justify-content: center; gap: 8px;
+}
+.footer-brand .footer-logo { font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; font-weight: 900; font-size: var(--text-sm); letter-spacing: 0.04em; color: oklch(90% 0.01 90); opacity: 0.4; }
+.footer-brand .footer-logo span { color: oklch(80% 0.01 90); }
+.footer-brand .footer-note { font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif; font-size: 10px; letter-spacing: 0.14em; color: oklch(85% 0.01 90); opacity: 0.35; }
+
+/* Toast */
+.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(16px); z-index: 100; padding: 10px 28px; border-radius: 9999px; font-size: var(--text-sm); font-weight: 500; letter-spacing: 0.02em; background: oklch(58% 0.09 158); color: #fff; box-shadow: 0 4px 20px oklch(58% 0.09 158 / 0.25); opacity: 0; pointer-events: none; transition: opacity var(--dur-normal) var(--ease-out), transform var(--dur-normal) var(--ease-out); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 768px) {
+  :root { --text-display: 3rem; }
+  .cursor-glow { display: none; }
+  .spreads { flex-direction: column; align-items: center; gap: var(--space-md); }
+  .spread-btn-wrap { max-width: 340px; width: 100%; flex: none; }
+  .screen { padding: var(--space-2xl) var(--space-md); }
+  .cover-line { height: 28px; }
+  body { background-attachment: scroll; }
+}
+
+@media (max-width: 375px) {
+  :root { --text-display: 2.5rem; }
+  .cover-sub { letter-spacing: 0.14em; }
+  .auth-logo { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 150ms !important; }
+  .cursor-glow { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- ═══════ SCREEN 1: AUTH — 纯悬浮表单，无深色卡片背景 ═══════ -->
+<div class="screen" id="authScreen">
+  <div class="auth-area">
+    <!-- Logo: 黑体 bold -->
+    <h1 class="auth-logo">DO!<span>Hand</span></h1>
+    <p class="auth-tagline">塔罗四元素 · 植物草药指引</p>
+
+    <div class="auth-form">
+      <div class="field-group">
+        <label class="field-label">邀请码</label>
+        <input type="text" class="field-input" id="inviteCode"
+               placeholder="请输入你的专属邀请码" autocomplete="off" maxlength="20">
+        <span class="field-hint">请输入有效的邀请码</span>
+      </div>
+      <div class="field-group">
+        <label class="field-label">手机号</label>
+        <input type="tel" class="field-input" id="phoneNumber"
+               placeholder="请输入手机号" autocomplete="tel" maxlength="11">
+        <span class="field-hint">请输入正确的11位手机号</span>
+      </div>
+
+      <!-- 验证按钮 — 纯 CSS，和输入框同款透明风格 -->
+      <button class="field-input" id="submitBtn" style="text-align:center;cursor:pointer;width:100%;margin-top:var(--space-sm);font-weight:500;letter-spacing:0.04em;">验证进入</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 2: COVER ═══════ -->
+<div class="screen" id="coverScreen">
+  <div class="cover-top-tag">
+    <span class="cover-top-tag-dot"></span>
+    <span class="cover-top-tag-text">TAROT · HERB · HEALING</span>
+    <span class="cover-top-tag-dot"></span>
+  </div>
+
+  <div class="cover-hero">
+    <h1 class="cover-logo">DO!<span>Hand</span></h1>
+    <p class="cover-sub">塔罗四元素 · 植物草药指引</p>
+    <span class="cover-line"></span>
+  </div>
+
+  <div class="spreads">
+    <div class="spread-btn-wrap" id="spread1Wrap"></div>
+    <div class="spread-btn-wrap" id="spread2Wrap"></div>
+    <div class="spread-btn-wrap" id="spread3Wrap"></div>
+  </div>
+</div>
+
+<div class="footer-brand">
+  <span class="footer-logo">DO!<span>Hand</span></span>
+  <span class="footer-note">内部学员使用</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════ WebGL SpecularButton Engine ═══════ -->
+<script type="importmap">
+{ "imports": { "ogl": "https://unpkg.com/ogl@1.0.11/dist/ogl.min.js" } }
+</script>
+
+<script type="module">
+import { Renderer, Program, Mesh, Triangle, Color } from 'ogl';
+
+const PAD = 20;
+const VERT = `#version 300 es
+in vec2 position;
+void main() { gl_Position = vec4(position, 0.0, 1.0); }`;
+
+const FRAG = `#version 300 es
+precision highp float;
+uniform vec2 uCenter; uniform vec2 uHalfSize;
+uniform float uRadius; uniform float uAngle; uniform float uPx;
+uniform vec3 uLineColor; uniform vec3 uBaseColor;
+uniform float uIntensity; uniform float uShineSize;
+uniform float uShineFade; uniform float uThickness; uniform float uBaseWidth;
+out vec4 fragColor;
+
+float sdRoundedRect(vec2 p, vec2 b, float r) {
+  vec2 q = abs(p) - b + r;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+}
+float shapeSDF(vec2 p) { return sdRoundedRect(p, uHalfSize, uRadius); }
+float gaussianLine(float d, float sigma) {
+  float x = d/(sigma+1e-6);
+  float k = mix(1.0, 1.6, smoothstep(0.0, 1.5, x));
+  return exp(-k*x*x);
+}
+void main() {
+  vec2 p = gl_FragCoord.xy-uCenter;
+  float d = shapeSDF(p);
+  vec2 L = vec2(cos(uAngle), sin(uAngle));
+  float base = (1.0-smoothstep(0.0, uBaseWidth, abs(d)))*0.45;
+  vec2 nEll = normalize(p/(uHalfSize*uHalfSize)+1e-6);
+  float phi = acos(clamp(abs(dot(nEll, L)), 0.0, 1.0));
+  float rim = 1.0-smoothstep(uShineSize-uShineFade, uShineSize+uShineFade+1e-4, phi);
+  float line = gaussianLine(d, uThickness);
+  float edgeClamp = 1.0-smoothstep(0.5*uPx, 3.0*uPx, abs(d));
+  float hi = line*rim*edgeClamp*uIntensity;
+  vec3 col = uBaseColor*base+uLineColor*hi;
+  float a = clamp(base+hi, 0.0, 1.0);
+  fragColor = vec4(col, a);
+}`;
+
+// ── SpecularButton factory ──
+function createSpecularButton(container, labelHTML, opts = {}) {
+  const {
+    radius = 18, lineColor = '#ffffff', baseColor = '#525252',
+    intensity = 1, shineSize = 10, shineFade = 40, thickness = 1,
+    speed = 0.35, followMouse = true, proximity = 250, autoAnimate = false,
+    disabled = false, size = 'lg', onClick = null
+  } = opts;
+
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.disabled = disabled;
+  btn.innerHTML = `<span class="spec-fx" aria-hidden="true"></span><span class="spec-label">${labelHTML}</span>`;
+  Object.assign(btn.style, {
+    position:'relative', display:'inline-flex', alignItems:'center', justifyContent:'center',
+    border:'none', margin:'0', width:'100%', fontFamily:'inherit', fontWeight:'500',
+    letterSpacing:'0.01em', lineHeight:'1', color:'#f5f5f5', background:'transparent',
+    borderRadius:radius+'px', cursor:disabled?'default':'pointer', outline:'none',
+    transition:'transform 0.15s ease',
+    padding: size==='lg'?'18px 40px':size==='md'?'14px 30px':'10px 22px',
+    fontSize: size==='lg'?'1.15rem':size==='md'?'1rem':'0.85rem',
+  });
+
+  const fxSpan = btn.querySelector('.spec-fx');
+  fxSpan.style.cssText = 'position:absolute;inset:-20px;pointer-events:none;z-index:1';
+  btn.querySelector('.spec-label').style.cssText = 'position:relative;z-index:2';
+
+  if (onClick) btn.addEventListener('click', onClick);
+  container.appendChild(btn);
+
+  // WebGL
+  const dpr = window.devicePixelRatio||1;
+  const renderer = new Renderer({ alpha:true, premultipliedAlpha:true, antialias:true, dpr });
+  const gl = renderer.gl; gl.clearColor(0,0,0,0); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  const geometry = new Triangle(gl); if(geometry.attributes.uv) delete geometry.attributes.uv;
+  const program = new Program(gl, { vertex:VERT, fragment:FRAG, uniforms:{
+    uCenter:{value:[0,0]}, uHalfSize:{value:[1,1]}, uRadius:{value:0}, uAngle:{value:2.4}, uPx:{value:dpr},
+    uLineColor:{value:[1,1,1]}, uBaseColor:{value:[.32,.32,.32]},
+    uIntensity:{value:1}, uShineSize:{value:.17}, uShineFade:{value:.7}, uThickness:{value:1}, uBaseWidth:{value:dpr}
+  }});
+  const mesh = new Mesh(gl, { geometry, program });
+  fxSpan.appendChild(gl.canvas);
+
+  const sizeRef = { w:1, h:1 };
+  const resize = () => {
+    const r = btn.getBoundingClientRect(); sizeRef.w=r.width; sizeRef.h=r.height;
+    renderer.setSize(r.width+PAD*2, r.height+PAD*2);
+    program.uniforms.uCenter.value = [(PAD+r.width/2)*dpr, (PAD+r.height/2)*dpr];
+    program.uniforms.uHalfSize.value = [(r.width/2)*dpr, (r.height/2)*dpr];
+  };
+  const ro = new ResizeObserver(resize); ro.observe(btn); resize();
+
+  let ptrAngle=null, proxT=0;
+  const onPtr = e => {
+    const r = btn.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right);
+    const dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom);
+    const dist=Math.hypot(dx,dy);
+    if(dist===0){ const nx=(e.clientX-cx)/(r.width/2); const ny=(cy-e.clientY)/(r.height/2); ptrAngle=Math.atan2(2/r.height,-2/r.width)+nx*.3+ny*.15; }
+    else ptrAngle=Math.atan2(cy-e.clientY,e.clientX-cx);
+    const t=Math.max(0,1-dist/Math.max(proximity,1)); proxT=t*t*(3-2*t);
+  };
+  window.addEventListener('pointermove', onPtr);
+
+  let ang=2.4, idle=2.4, bri=0, last=performance.now(), raf=0;
+  const lc=new Color(), bc=new Color();
+  const upd = now => {
+    raf=requestAnimationFrame(upd);
+    const dt=Math.min((now-last)/1000,.05); last=now;
+    idle+=speed*dt;
+    const steer=followMouse&&ptrAngle!=null&&(!autoAnimate||proxT>0);
+    const tgt=steer?ptrAngle:idle;
+    const diff=((tgt-ang+Math.PI*3)%(Math.PI*2))-Math.PI;
+    ang+=diff*(1-Math.exp(-dt*7));
+    const briTgt=autoAnimate?1:proxT; bri+=(briTgt-bri)*(1-Math.exp(-dt*8));
+    lc.set(lineColor); bc.set(baseColor);
+    program.uniforms.uAngle.value=ang;
+    program.uniforms.uRadius.value=Math.min(radius,Math.min(sizeRef.w,sizeRef.h)/2)*dpr;
+    program.uniforms.uLineColor.value=[lc.r,lc.g,lc.b];
+    program.uniforms.uBaseColor.value=[bc.r,bc.g,bc.b];
+    program.uniforms.uIntensity.value=intensity*bri;
+    program.uniforms.uShineSize.value=(shineSize*Math.PI)/180;
+    program.uniforms.uShineFade.value=(shineFade*Math.PI)/180;
+    program.uniforms.uThickness.value=thickness*dpr;
+    renderer.render({scene:mesh});
+  };
+  raf=requestAnimationFrame(upd);
+
+  btn.addEventListener('pointerdown',()=>{btn.style.transform='scale(0.97)';});
+  btn.addEventListener('pointerup',()=>{btn.style.transform='';});
+  btn.addEventListener('pointerleave',()=>{btn.style.transform='';});
+  btn.addEventListener('focus',()=>{btn.style.outline='2px solid color-mix(in srgb,#f5f5f5 60%,transparent)';btn.style.outlineOffset='3px';});
+  btn.addEventListener('blur',()=>{btn.style.outline='';btn.style.outlineOffset='';});
+
+  return {
+    destroy(){ cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('pointermove',onPtr); if(gl.canvas.parentNode===fxSpan)fxSpan.removeChild(gl.canvas); gl.getExtension('WEBGL_lose_context')?.loseContext(); btn.remove(); },
+    setDisabled(d){ btn.disabled=d; btn.style.opacity=d?'.55':''; btn.style.cursor=d?'default':'pointer'; }
+  };
+}
+
+// ── DOM refs ──
+const inviteInput = document.getElementById('inviteCode');
+const phoneInput = document.getElementById('phoneNumber');
+const authScreen = document.getElementById('authScreen');
+const coverScreen = document.getElementById('coverScreen');
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Auth submit handler ──
+function handleSubmit() {
+  const code = inviteInput.value.trim();
+  const phone = phoneInput.value.trim();
+  inviteInput.classList.remove('error'); phoneInput.classList.remove('error');
+  let valid = true;
+  if (!code || code.length < 2) { inviteInput.classList.add('error'); valid = false; }
+  if (!phone || !/^1\d{10}$/.test(phone)) { phoneInput.classList.add('error'); valid = false; }
+  if (!valid) return;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = '验证中...';
+  setTimeout(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = '验证进入';
+    authScreen.classList.add('hidden');
+    coverScreen.classList.add('visible');
+    showToast('欢迎回来');
+  }, 1000);
+}
+
+// ── Submit button ──
+const submitBtn = document.getElementById('submitBtn');
+submitBtn.addEventListener('click', handleSubmit);
+
+// ── Spread buttons ──
+function enterSpread(name) { showToast('即将进入「'+name+'」'); }
+
+['植物信念觉察法','人际镜像阵','沙龙牌阵'].forEach((name, i) => {
+  const subs = ['火土风水四元素 · 信念显化','宫廷投射 · 爱情 / 友情 / 亲情','双牌指引 · 轻松入门'];
+  createSpecularButton(
+    document.getElementById('spread'+(i+1)+'Wrap'),
+    `<span class="specular-spread-label"><span class="title">${name}</span><span class="sub">${subs[i]}</span></span>`,
+    { baseColor:'#3a3a3a', lineColor:'#e0e0e0', radius:18, intensity:0.9, shineSize:10, shineFade:40, thickness:1, speed:0.35, proximity:250, size:'lg', onClick:()=>enterSpread(name) }
+  );
+});
+
+// ── Enter key submits ──
+[inviteInput, phoneInput].forEach(el => {
+  el.addEventListener('keydown', e => { if(e.key==='Enter') handleSubmit(); el.classList.remove('error'); });
+});
+
+// ── Escape resets demo ──
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape' && coverScreen.classList.contains('visible')) {
+    coverScreen.classList.remove('visible'); authScreen.classList.remove('hidden');
+    inviteInput.value=''; phoneInput.value='';
+    inviteInput.classList.remove('error'); phoneInput.classList.remove('error');
+  }
+});
+
+// ── Cursor spotlight ──
+const glow = document.getElementById('cursorGlow');
+let mx = innerWidth/2, my = innerHeight/2;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function tick(){ glow.style.left=mx+'px'; glow.style.top=my+'px'; requestAnimationFrame(tick); })();
+</script>
+</body>
+</html>

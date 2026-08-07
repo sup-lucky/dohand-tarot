@@ -8,7 +8,6 @@ export function getSession() {
     const raw = localStorage.getItem(SESSION_KEY)
     if (!raw) return null
     const session = JSON.parse(raw)
-    // 检查是否过期
     if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
       localStorage.removeItem(SESSION_KEY)
       return null
@@ -33,7 +32,6 @@ export default function AuthGate({ onLogin }) {
     e.preventDefault()
     setError('')
 
-    // 基本校验
     const trimmedCode = code.trim()
     const trimmedPhone = phone.trim()
     if (!trimmedCode) {
@@ -66,70 +64,70 @@ export default function AuthGate({ onLogin }) {
   }
 
   return (
-    <div className="w-full h-screen flex items-center justify-center px-6"
-      style={{ background: 'linear-gradient(135deg, #fef9e7 0%, #fdf6e3 20%, #eaf4f0 50%, #f0f4f8 75%, #fdf6e3 100%)' }}>
+    <div className="w-full h-screen flex items-center justify-center px-6 relative z-10">
       <div className="w-full max-w-[340px] flex flex-col items-center">
 
-        {/* Logo */}
-        <h1 className="text-[2.4rem] leading-none mb-2"
-          style={{ fontFamily: `"Arial Black", "Helvetica Neue", Arial, sans-serif`, fontWeight: 900, color: '#4a3a2a' }}>
-          DO!<span style={{ color: '#7a6a50' }}>Hand</span>
+        {/* Logo — Arial Black 黑体 */}
+        <h1 className="text-[2.5rem] leading-none mb-2 text-white"
+          style={{ fontFamily: `"Arial Black", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", sans-serif`, fontWeight: 900 }}>
+          DO!<span style={{ color: 'oklch(82% 0.04 162)' }}>Hand</span>
         </h1>
-        <p className="text-[11px] tracking-[0.2em] text-stone-400 mb-12">内部学员 · 专属网站</p>
+        <p className="text-[10px] tracking-[0.22em] mb-12"
+          style={{ color: 'oklch(95% 0.01 90 / 0.9)', textShadow: '0 1px 4px oklch(0% 0 0 / 0.4)' }}>
+          塔罗四元素 · 植物草药指引
+        </p>
 
-        {/* 表单卡片 */}
-        <div className="w-full bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-sm border border-stone-200/50">
-
-          {/* 邀请码 */}
-          <div className="mb-5">
-            <label className="block text-xs tracking-[0.1em] text-stone-500 mb-2">邀请码</label>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+          <div>
+            <label className="block text-[11px] font-medium tracking-[0.06em] mb-1.5"
+              style={{ color: 'oklch(90% 0.01 90 / 0.7)' }}>
+              邀请码
+            </label>
             <input
               type="text"
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => { setCode(e.target.value); setError('') }}
               placeholder="请输入你的专属邀请码"
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white/80 text-sm text-stone-700
-                placeholder:text-stone-300 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100
-                transition-all"
+              className={`glass-input ${error && !code.trim() ? 'error' : ''}`}
+              autoComplete="off"
+              maxLength={20}
             />
           </div>
 
-          {/* 手机号 */}
-          <div className="mb-6">
-            <label className="block text-xs tracking-[0.1em] text-stone-500 mb-2">手机号</label>
+          <div>
+            <label className="block text-[11px] font-medium tracking-[0.06em] mb-1.5"
+              style={{ color: 'oklch(90% 0.01 90 / 0.7)' }}>
+              手机号
+            </label>
             <input
               type="tel"
               maxLength={11}
               value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-              placeholder="绑定手机号，一码一机"
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white/80 text-sm text-stone-700
-                placeholder:text-stone-300 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100
-                transition-all"
+              onChange={(e) => { setPhone(e.target.value.replace(/\D/g, '')); setError('') }}
+              placeholder="请输入手机号"
+              className={`glass-input ${error && !/^1[3-9]\d{9}$/.test(phone.trim()) ? 'error' : ''}`}
+              autoComplete="tel"
             />
-            <p className="text-[10px] text-stone-300 mt-1.5">每个邀请码仅可绑定一部手机</p>
           </div>
 
-          {/* 错误提示 */}
           {error && (
-            <p className="text-xs text-red-400 mb-4 text-center">{error}</p>
+            <p className="text-[11px] text-center" style={{ color: 'oklch(65% 0.15 20)' }}>{error}</p>
           )}
 
-          {/* 提交按钮 */}
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-[#4a3a2a] text-white text-sm font-medium tracking-[0.1em]
-              active:bg-[#3a2a1a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="glass-btn mt-1"
           >
-            {loading ? '验证中...' : '进入网站'}
+            {loading ? '验证中...' : '验证进入'}
           </button>
-        </div>
+        </form>
 
-        {/* 底部提示 */}
-        <p className="text-[10px] text-stone-300 mt-8 text-center leading-relaxed">
-          本网站为 DO!Hand 内部学员专属<br />
-          未经授权不得分享或转让他人使用
+        {/* Footer */}
+        <p className="text-[10px] mt-10 tracking-[0.06em] text-center"
+          style={{ color: 'oklch(90% 0.01 90)', opacity: 0.35 }}>
+          DO!Hand  内部学员使用
         </p>
       </div>
     </div>
