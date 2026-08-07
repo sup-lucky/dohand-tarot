@@ -183,8 +183,8 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
                 <button key={card.id} onClick={() => handleCardSelect(card)}
                   className="relative p-2 rounded-xl border text-left active:scale-95 transition-transform"
                   style={{
-                    background: isSelected ? ec.bg : 'rgba(255,255,255,0.07)',
-                    borderColor: isSelected ? ec.border : 'rgba(255,255,255,0.22)',
+                    background: isSelected ? ec.bg : 'rgba(255,255,255,0.92)',
+                    borderColor: isSelected ? ec.border : 'rgba(255,255,255,0.15)',
                     borderWidth: isSelected ? 2 : 1,
                   }}>
                   {card.element && (
@@ -193,11 +193,11 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
                       {card.element === 'air' && '💨'}{card.element === 'earth' && '🌿'}
                     </span>
                   )}
-                  <div className="text-xs font-bold text-white leading-tight mt-1">{card.name_zh}</div>
-                  <div className="text-[10px] text-white/55 mt-0.5">{card.name_en}</div>
+                  <div className="text-xs font-bold leading-tight mt-1" style={{color:'#333'}}>{card.name_zh}</div>
+                  <div className="text-[10px] mt-0.5" style={{color:'#777'}}>{card.name_en}</div>
                   <div className="flex flex-wrap gap-1 mt-1.5">
                     {card.keywords.slice(0, 2).map((kw, i) => (
-                      <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full text-white/60" style={{background:'rgba(255,255,255,0.14)'}}>{kw}</span>
+                      <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{background:'rgba(0,0,0,0.05)',color:'#666'}}>{kw}</span>
                     ))}
                   </div>
                   {isSelected && (
