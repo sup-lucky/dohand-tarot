@@ -48,13 +48,13 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
     return (
       <div className="flex flex-col min-h-screen">
         <div className="px-4 py-3 flex items-center border-b border-white/5 bg-black/30">
-          <button onClick={onBack} className="text-white/60 text-sm">← 返回</button>
+          <button onClick={onBack} className="text-white/70 text-sm">← 返回</button>
           <div className="flex-1 text-center"><span className="font-semibold text-white text-sm">{spread.name}</span></div>
           <div className="w-12" />
         </div>
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <h2 className="text-lg font-semibold text-white mb-2">你想探索什么问题？</h2>
-          <p className="text-xs text-white/40 mb-6 text-center">越具体，解读越能贴合你的真实情况</p>
+          <p className="text-xs text-white/65 mb-6 text-center">越具体，解读越能贴合你的真实情况</p>
           <textarea value={questionInput} onChange={e => setQuestionInput(e.target.value)}
             placeholder="例如：我最近在工作上总是感到很焦虑…"
             className="w-full max-w-sm h-36 p-4 rounded-2xl text-sm text-white placeholder-white/25 resize-none glass-input"
@@ -62,11 +62,11 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
           <button onClick={() => { if (questionInput.trim()) { setQuestion(questionInput.trim()); setQuestionPhase(false) } }}
             disabled={!questionInput.trim()}
             className={`mt-6 px-8 py-3 rounded-full text-sm font-medium ${
-              questionInput.trim() ? 'glass-btn' : 'bg-white/5 border border-white/5 text-white/20'
+              questionInput.trim() ? 'glass-btn' : 'bg-white/8 border border-white/10 text-white/40'
             }`} style={{width:'auto'}}>
             开始抽牌
           </button>
-          <button onClick={() => setQuestionPhase(false)} className="mt-3 text-xs text-white/30 active:text-white/50">
+          <button onClick={() => setQuestionPhase(false)} className="mt-3 text-xs text-white/50 active:text-white/70">
             跳过，使用通用解读
           </button>
         </div>
@@ -87,14 +87,14 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
       {/* Header */}
       <div className="sticky top-0 z-10 px-4 py-3 border-b border-white/5 bg-black/30">
         <div className="flex items-center justify-between">
-          <button onClick={onBack} className="text-white/60 text-sm">← 返回</button>
+          <button onClick={onBack} className="text-white/70 text-sm">← 返回</button>
           <div className="text-center">
             <div className="font-semibold text-white text-sm">{spread.name}</div>
-            <div className="text-xs text-white/40">{filledCount}/{positions.length} 张</div>
+            <div className="text-xs text-white/55">{filledCount}/{positions.length} 张</div>
           </div>
           <button onClick={onFinish} disabled={!allFilled}
             className={`text-sm font-medium px-4 py-1.5 rounded-full ${
-              allFilled ? 'glass-btn' : 'bg-white/5 border border-white/5 text-white/25'
+              allFilled ? 'glass-btn' : 'bg-white/8 border border-white/8 text-white/40'
             }`} style={{width:'auto'}}>
             查看解读
           </button>
@@ -120,7 +120,7 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <span className="font-semibold text-white">{positions.find(p => p.id === activePos)?.label}位</span>
-                <span className="text-white/40 text-sm ml-2">{positions.find(p => p.id === activePos)?.desc}</span>
+                <span className="text-white/55 text-sm ml-2">{positions.find(p => p.id === activePos)?.desc}</span>
                 {(() => {
                   const ap = positions.find(p => p.id === activePos)?.pool
                   if (ap === 'court') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-purple-400/15 text-purple-300/80">仅宫廷牌</span>
@@ -158,12 +158,12 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
 
       <div className="px-4 flex-1">
         {!activePos ? (
-          <div className="flex flex-col items-center justify-center py-12 text-white/25">
+          <div className="flex flex-col items-center justify-center py-12 text-white/45">
             <p className="text-base mb-1">点击上方牌阵中的一个位置</p>
             <p className="text-sm">然后选择你抽到的牌</p>
           </div>
         ) : filteredCards.length === 0 ? (
-          <div className="text-center py-12 text-white/25"><p>没有匹配的牌</p></div>
+          <div className="text-center py-12 text-white/45"><p>没有匹配的牌</p></div>
         ) : (
           <div className="grid grid-cols-3 gap-2">
             {filteredCards.map(card => {
@@ -194,10 +194,10 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
                     </span>
                   )}
                   <div className="text-xs font-bold text-white leading-tight mt-1">{card.name_zh}</div>
-                  <div className="text-[10px] text-white/30 mt-0.5">{card.name_en}</div>
+                  <div className="text-[10px] text-white/45 mt-0.5">{card.name_en}</div>
                   <div className="flex flex-wrap gap-1 mt-1.5">
                     {card.keywords.slice(0, 2).map((kw, i) => (
-                      <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/35">{kw}</span>
+                      <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/8 text-white/50">{kw}</span>
                     ))}
                   </div>
                   {isSelected && (
@@ -277,12 +277,12 @@ function Slot({ pos, card, active, onClick, large, highlight }) {
         <>
           <span className="text-lg">{card.isReversed ? '🔄' : card.card.name_zh.slice(0, 2)}</span>
           {card.isReversed && <span className="text-[9px] text-purple-400/70 mt-0.5">逆位</span>}
-          <span className="text-[10px] text-white/40 mt-0.5">{pos.label}</span>
+          <span className="text-[10px] text-white/55 mt-0.5">{pos.label}</span>
         </>
       ) : (
         <>
           <span className="text-lg text-white/12">+</span>
-          <span className="text-[10px] text-white/25 mt-0.5">{pos.label}</span>
+          <span className="text-[10px] text-white/45 mt-0.5">{pos.label}</span>
         </>
       )}
     </button>
