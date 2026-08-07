@@ -116,26 +116,26 @@ export default function SelectCards({ reading, question, setQuestion, onSelect, 
 
       {activePos && (
         <div className="px-4 mb-3">
-          <div className="rounded-xl p-3 border border-white/10 bg-white/5">
+          <div className="rounded-xl p-3 border border-white/20" style={{background:'rgba(255,255,255,0.92)'}}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <span className="font-semibold text-white">{positions.find(p => p.id === activePos)?.label}位</span>
-                <span className="text-white/55 text-sm ml-2">{positions.find(p => p.id === activePos)?.desc}</span>
+                <span className="font-semibold" style={{color:'#333'}}>{positions.find(p => p.id === activePos)?.label}位</span>
+                <span className="text-sm ml-2" style={{color:'#666'}}>{positions.find(p => p.id === activePos)?.desc}</span>
                 {(() => {
                   const ap = positions.find(p => p.id === activePos)?.pool
-                  if (ap === 'court') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-purple-400/15 text-purple-300/80">仅宫廷牌</span>
-                  if (ap && ap !== 'all' && ap !== 'all_minor') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{background:'rgba(138,191,160,0.15)',color:'#8abfa0'}}>仅{SUIT_NAMES[ap]}数字牌</span>
-                  if (ap === 'all_minor') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{background:'rgba(138,191,160,0.15)',color:'#8abfa0'}}>40张数字牌</span>
+                  if (ap === 'court') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{background:'rgba(0,0,0,0.06)',color:'#666'}}>仅宫廷牌</span>
+                  if (ap && ap !== 'all' && ap !== 'all_minor') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{background:'rgba(0,0,0,0.06)',color:'#666'}}>仅{SUIT_NAMES[ap]}数字牌</span>
+                  if (ap === 'all_minor') return <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{background:'rgba(0,0,0,0.06)',color:'#666'}}>40张数字牌</span>
                   return null
                 })()}
               </div>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setReversed(false)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium"
-                  style={!reversed ? {background:'#8abfa0',color:'#fff'} : {background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.6)'}}>正位</button>
+                  style={!reversed ? {background:'#8abfa0',color:'#fff'} : {background:'#fff',color:'#555'}}>正位</button>
                 <button onClick={() => setReversed(true)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium"
-                  style={reversed ? {background:'rgba(168,85,247,0.45)',color:'#fff'} : {background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.6)'}}>逆位</button>
+                  style={reversed ? {background:'rgba(168,85,247,0.5)',color:'#fff'} : {background:'#fff',color:'#555'}}>逆位</button>
               </div>
             </div>
           </div>
