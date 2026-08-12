@@ -31,6 +31,15 @@ export default function App() {
     setChecking(false)
   }, [])
 
+  // 首屏渲染后后台静默预取选牌/结果页（含卡牌+草药数据），点牌阵时无需等待
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      import('./pages/SelectCards').catch(() => {})
+      import('./pages/ResultPage').catch(() => {})
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [])
+
   const startReading = useCallback((spreadId, mode) => {
     setReading({ spreadId, mode, cards: {} })
     setQuestion('')
