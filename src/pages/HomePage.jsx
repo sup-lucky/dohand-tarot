@@ -44,7 +44,7 @@ export default function HomePage({ onStart }) {
       {/* Spread selection */}
       {!modePick ? (
         <div className="flex gap-5 flex-wrap justify-center max-w-[780px] w-full">
-          {spreads.map(sp => (
+          {spreads.filter(sp => sp.id !== 'salon').map(sp => (
             <div key={sp.id} className="flex-1 min-w-[190px] max-w-[255px]">
               <SpecularButton
                 size="lg"

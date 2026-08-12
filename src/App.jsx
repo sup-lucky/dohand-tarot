@@ -1,9 +1,11 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, lazy, Suspense } from 'react'
 import HomePage from './pages/HomePage'
-import SelectCards from './pages/SelectCards'
-import ResultPage from './pages/ResultPage'
 import AuthGate, { getSession } from './components/AuthGate'
+
+// 选牌页/结果页按需加载，卡牌+草药数据（约 270KB）不再阻塞首屏
+const SelectCards = lazy(() => import('./pages/SelectCards'))
+const ResultPage = lazy(() => import('./pages/ResultPage'))
 
 // 背景图 — import 确保 dev 和 production 路径都正确
 import bgImage from '/IMG_8608.jpeg'
@@ -51,10 +53,12 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<HomePage onStart={startReading} />} />
-      <Route path="/select" element={<SelectCards reading={reading} question={question} setQuestion={setQuestion} onSelect={selectCard} onFinish={finishReading} onBack={() => navigate('/')} />} />
-      <Route path="/result" element={<ResultPage reading={reading} question={question} onRestart={resetReading} onBack={() => navigate('/select')} />} />
-    </Routes>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50 text-sm">加载中…</div>}>
+      <Routes>
+        <Route path="/" element={<HomePage onStart={startReading} />} />
+        <Route path="/select" element={<SelectCards reading={reading} question={question} setQuestion={setQuestion} onSelect={selectCard} onFinish={finishReading} onBack={() => navigate('/')} />} />
+        <Route path="/result" element={<ResultPage reading={reading} question={question} onRestart={resetReading} onBack={() => navigate('/select')} />} />
+      </Routes>
+    </Suspense>
   )
 }
