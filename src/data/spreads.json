@@ -36,9 +36,9 @@
     },
     "positions": [
       { "id": "projection", "label": "投射牌", "element": null, "pool": "court", "desc": "对方在我心中的形象——我将他/她投射成了什么角色" },
-      { "id": "detail1", "label": "细节一", "element": null, "pool": "all_minor", "desc": "投射背后的内在信念——我在这段关系中的真实感受" },
-      { "id": "detail2", "label": "细节二", "element": null, "pool": "all_minor", "desc": "关系中的思维模式——我对这段关系的认知框架" },
-      { "id": "detail3", "label": "细节三", "element": null, "pool": "all_minor", "desc": "关系中的行动倾向——我在关系中习惯如何应对" }
+      { "id": "detail1", "label": "细节一", "element": null, "pool": "all_minor", "desc": "按这张牌本身的含义，映照这段关系里的一个侧面" },
+      { "id": "detail2", "label": "细节二", "element": null, "pool": "all_minor", "desc": "按这张牌本身的含义，映照这段关系里的一个侧面" },
+      { "id": "detail3", "label": "细节三", "element": null, "pool": "all_minor", "desc": "按这张牌本身的含义，映照这段关系里的一个侧面" }
     ]
   },
   {
