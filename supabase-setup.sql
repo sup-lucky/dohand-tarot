@@ -77,6 +77,10 @@ CREATE TABLE IF NOT EXISTS keepalive_pings (
   pinged_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 开启 RLS（不设策略 = 禁止 anon 直接读写；keepalive_ping 函数是 SECURITY DEFINER，
+-- 以创建者身份运行、默认绕过 RLS，所以定时写入不受影响）
+ALTER TABLE keepalive_pings ENABLE ROW LEVEL SECURITY;
+
 -- 7. 创建 keep-alive 函数，供 GitHub Actions 每天定时调用
 CREATE OR REPLACE FUNCTION keepalive_ping()
 RETURNS BOOLEAN
