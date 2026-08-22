@@ -70,3 +70,25 @@ GRANT EXECUTE ON FUNCTION verify_code TO anon, authenticated;
 -- VALUES
 --   ('DH001', '张三', NOW() + INTERVAL '2 years'),
 --   ('DH002', '李四', NOW() + INTERVAL '2 years');
+
+-- 6. 创建 keep-alive 表（防止免费项目因 7 天不活跃被自动暂停）
+CREATE TABLE IF NOT EXISTS keepalive_pings (
+  id        BIGSERIAL PRIMARY KEY,
+  pinged_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. 创建 keep-alive 函数，供 GitHub Actions 每天定时调用
+CREATE OR REPLACE FUNCTION keepalive_ping()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  -- 只保留最近 30 天记录，避免表无限增长
+  DELETE FROM keepalive_pings WHERE pinged_at < NOW() - INTERVAL '30 days';
+  INSERT INTO keepalive_pings DEFAULT VALUES;
+  RETURN true;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION keepalive_ping() TO anon;

@@ -1,0 +1,31 @@
+name: Keep Supabase alive
+
+# 防止 Supabase 免费项目因 7 天不活跃被自动暂停。
+# 每天用公开的 anon key 调一次 RPC（真正的数据库写入），重置「不活跃」计时器。
+# 注：anon key 是 publishable 公开密钥，本来就内嵌在前端 JS 里，放这里无安全风险。
+
+on:
+  schedule:
+    # UTC 03:00 = 北京时间 11:00，每天一次（远小于 7 天窗口）
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}   # 可在 Actions 页手动触发，方便测试
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase keepalive RPC
+        run: |
+          code=$(curl -sS -o /tmp/resp.json -w '%{http_code}' \
+            -X POST "https://caehelsbmkkmxychzpvj.supabase.co/rest/v1/rpc/keepalive_ping" \
+            -H "apikey: sb_publishable_TwmueiiKcfOby5SNjWWvpQ_WmWgAjfB" \
+            -H "Authorization: Bearer sb_publishable_TwmueiiKcfOby5SNjWWvpQ_WmWgAjfB" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "❌ keep-alive 失败（HTTP $code）——项目可能被暂停了，请去 Supabase dashboard 恢复"
+            cat /tmp/resp.json
+            exit 1
+          fi
+          echo "✅ keep-alive 成功，已写入一条记录"
