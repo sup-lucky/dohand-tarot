@@ -1,5 +1,5 @@
-import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{a as t,i as n,n as r,r as i,t as a}from"./index-BVNXJVkv.js";import{t as o}from"./data-BdCvYwy9.js";var s=e(t(),1),c=i(),l={fire:{emoji:`🔥`,name:`火`,color:`text-red-600`,bg:`bg-red-50`,desc:`行动·热情·目的`,belief:`行动信念`},water:{emoji:`💧`,name:`水`,color:`text-blue-600`,bg:`bg-blue-50`,desc:`情感·直觉·潜意识`,belief:`情绪信念`},air:{emoji:`💨`,name:`风`,color:`text-sky-600`,bg:`bg-sky-50`,desc:`思维·沟通·逻辑`,belief:`思维信念`},earth:{emoji:`🌿`,name:`土`,color:`text-green-600`,bg:`bg-green-50`,desc:`物质·金钱·工作`,belief:`价值信念`}},u=(e,t)=>e.id===`four-elements`?t===`phase1`?e.positions_phase1:e.positions_phase2:e.positions;function d({reading:e,question:t,onRestart:i,onBack:d}){let[f,p]=(0,s.useState)(null),[m,h]=(0,s.useState)(null),g=(0,s.useRef)(!1);if(!e)return(0,c.jsxs)(`div`,{className:`flex flex-col items-center justify-center min-h-screen px-5`,children:[(0,c.jsx)(`p`,{className:`text-stone-400`,children:`暂无解读数据`}),(0,c.jsx)(`button`,{onClick:i,className:`btn-primary mt-4`,children:`返回首页`})]});let _=n.find(t=>t.id===e.spreadId);if(!_)return(0,c.jsxs)(`div`,{className:`flex flex-col items-center justify-center min-h-screen px-5`,children:[(0,c.jsx)(`p`,{className:`text-stone-400`,children:`牌阵未找到`}),(0,c.jsx)(`button`,{onClick:i,className:`btn-primary mt-4`,children:`返回首页`})]});let v=e.mode,y=u(_,v),b=(e,t)=>{if(!e?.card)return null;if(_.id===`four-elements`){if(v===`phase1`)return e.isReversed?e.card.meaning_phase1?.reversed:e.card.meaning_phase1?.upright;if(v===`phase2`)return e.isReversed?e.card.meaning_phase2?.reversed:e.card.meaning_phase2?.upright}return _.id===`interpersonal-mirror`?t.id===`projection`?e.isReversed?e.card.meaning_mirror?.reversed:e.card.meaning_mirror?.upright:e.isReversed?e.card.meaning_phase1?.reversed:e.card.meaning_phase1?.upright:_.id===`salon`?e.isReversed?e.card.meaning_improve.reversed:e.card.meaning_improve.upright:null},x=y.map(t=>{let n=e.cards[t.id];return{...t,card:n?.card||null,isReversed:n?.isReversed||!1,meaning:b(n,t)}});(0,s.useEffect)(()=>{if(!t||g.current)return;g.current=!0,h(`loading`);let n=x.filter(e=>e.card).map(e=>({position:e.label,positionDesc:e.desc,name:e.card.name_zh,isReversed:e.isReversed}));if(n.length===0){h(null);return}let i=n.map((e,t)=>`第${t+1}张：【${e.position}】${e.name}（${e.isReversed?`逆位`:`正位`}）——牌位含义：${e.positionDesc}`).join(`
-`),o=_.id===`four-elements`&&e.mode===`phase2`,s;s=o?`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力、务实落地。
+import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{a as t,i as n,n as r,r as i,t as a}from"./index-CceU5WCX.js";import{t as o}from"./data-BdCvYwy9.js";var s=e(t(),1),c=i(),l={fire:{emoji:`🔥`,name:`火`,color:`text-red-600`,bg:`bg-red-50`,desc:`行动·热情·目的`,belief:`行动信念`},water:{emoji:`💧`,name:`水`,color:`text-blue-600`,bg:`bg-blue-50`,desc:`情感·直觉·潜意识`,belief:`情绪信念`},air:{emoji:`💨`,name:`风`,color:`text-sky-600`,bg:`bg-sky-50`,desc:`思维·沟通·逻辑`,belief:`思维信念`},earth:{emoji:`🌿`,name:`土`,color:`text-green-600`,bg:`bg-green-50`,desc:`物质·金钱·工作`,belief:`价值信念`}},u=(e,t)=>e.id===`four-elements`?t===`phase1`?e.positions_phase1:e.positions_phase2:e.positions;function d({reading:e,question:t,onRestart:i,onBack:d}){let[f,p]=(0,s.useState)(null),[m,h]=(0,s.useState)(null),g=(0,s.useRef)(!1);if(!e)return(0,c.jsxs)(`div`,{className:`flex flex-col items-center justify-center min-h-screen px-5`,children:[(0,c.jsx)(`p`,{className:`text-stone-400`,children:`暂无解读数据`}),(0,c.jsx)(`button`,{onClick:i,className:`btn-primary mt-4`,children:`返回首页`})]});let _=n.find(t=>t.id===e.spreadId);if(!_)return(0,c.jsxs)(`div`,{className:`flex flex-col items-center justify-center min-h-screen px-5`,children:[(0,c.jsx)(`p`,{className:`text-stone-400`,children:`牌阵未找到`}),(0,c.jsx)(`button`,{onClick:i,className:`btn-primary mt-4`,children:`返回首页`})]});let v=e.mode,y=u(_,v),b=(e,t)=>{if(!e?.card)return null;if(_.id===`four-elements`){if(v===`phase1`)return e.isReversed?e.card.meaning_phase1?.reversed:e.card.meaning_phase1?.upright;if(v===`phase2`)return e.isReversed?e.card.meaning_phase2?.reversed:e.card.meaning_phase2?.upright}return _.id===`interpersonal-mirror`?t.id===`projection`?e.isReversed?e.card.meaning_mirror?.reversed:e.card.meaning_mirror?.upright:e.isReversed?e.card.meaning_phase1?.reversed:e.card.meaning_phase1?.upright:_.id===`salon`?e.isReversed?e.card.meaning_improve.reversed:e.card.meaning_improve.upright:null},x=y.map(t=>{let n=e.cards[t.id];return{...t,card:n?.card||null,isReversed:n?.isReversed||!1,meaning:b(n,t)}});(0,s.useEffect)(()=>{if(!t||g.current)return;g.current=!0,h(`loading`);let n=x.filter(e=>e.card&&e.id!==`emphasis`).map(e=>({position:e.label,positionDesc:e.desc,name:e.card.name_zh,isReversed:e.isReversed}));if(n.length===0){h(null);return}let i=n.map((e,t)=>`第${t+1}张：【${e.position}】${e.name}（${e.isReversed?`逆位`:`正位`}）——牌位含义：${e.positionDesc}`).join(`
+`),o=_.id===`four-elements`&&e.mode===`phase2`,s;if(o)s=`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力、务实落地。
 
 核心理念：这是「植物信念觉察法」的第二阶段——解决方法。客户已经看清了自己的信念，现在要往前走。这一阶段抽到的每一张牌，都是一条「建议」——它告诉客户在这个方向上，最该采取的态度是什么。解读目的是帮客户看清「接下来在每个方向具体怎么做」，把觉察转化为行动。语言要像朋友给建议——真诚、有温度、可执行、不玄乎。
 
@@ -9,11 +9,13 @@ import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{a as t,i as n,n as r,r
 
 解读规则（重要）——每张牌都是一条建议，要尊重牌自己的语言，不要套统一模板：
 - 按牌本身的含义来给建议。例如圣杯四的建议是「静下来、向内看、别急着做决定」，而不是「主动一点」；权杖牌往往建议「行动、往前推进」，宝剑牌往往建议「想清楚、沟通表达」，星币牌往往建议「落地、务实、一步步来」。
-- 正位 = 这条建议值得采纳，就往牌义指的方向走（比如圣杯四正位 = 建议你停一停、向内看）；
-- 逆位 = 方向相反，往往是「你已经在这个状态里待太久了，需要走出来或松一松」（比如圣杯四逆位 = 你停滞太久了，该动起来、重新打开自己）。
-- 切记：不要把「正位」一律写成「主动去做」——有些牌的正位恰恰是「安静、停下、观察」，这才是它给的建议。
+- 正位 = 正位牌义本身就是建议，照着给（比如圣杯四正位 = 建议静下来、向内看、别急着做决定）；
+- 逆位 = 逆位牌义本身就是建议，照着给（比如圣杯四逆位 = 建议动起来、走出去、重新打开自己；星币三逆位 = 建议独立完成、单打独斗、别依赖团队协作）。
+- 切记两点：
+  1. 建议牌不是现状牌，不要描述客户「现在是什么状态」，直接给建议就行；
+  2. 不要做「反转」——别因为某张牌是逆位，就解成「你已经在反面待太久、要回到正位」。逆位本身就是一条有效建议，照着逆位的牌义给。
 
-请按每张牌的顺序解读，紧密结合客户的具体问题展开。每段150-250字，温暖真诚，先点出这张牌给出的建议是什么，再给 1-2 个具体可做的动作。最后加一段「解决之道」：2-3 句话把四个方向合成「接下来该怎么走」的行动指引。`:_.id===`interpersonal-mirror`?`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力、真诚不玄乎。
+请按每张牌的顺序解读，紧密结合客户的具体问题展开。每段150-250字，温暖真诚，先点出这张牌给出的建议是什么，再给 1-2 个具体可做的动作。最后加一段「解决之道」：2-3 句话把四个方向合成「接下来该怎么走」的行动指引。`;else if(_.id===`interpersonal-mirror`)s=`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力、真诚不玄乎。
 
 核心理念：这是一套「关系」牌阵，解读必须紧扣客户问的具体问题和关系类型（爱情/友情/亲情）展开，而不是泛泛地讲牌义。客户抽到的每一张牌都不是偶然——它们背后都映照着客户内心深处的「核心信念」：关于他自己（值不值得被爱、够不够好）、关于这段关系（会不会离开）、关于感情与爱本身（爱意味着什么）。这些核心信念在无意识中驱动着客户的感受与选择，显化出了他此刻正在经历的这段关系。语言要像朋友聊天，有温度、说到点子上。
 
@@ -25,7 +27,7 @@ import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{a as t,i as n,n as r,r
 
 请始终回扣客户的具体问题，落在当下这段关系里说。
 
-请按每张牌的顺序解读，紧密结合客户的具体问题展开。每段150-250字，温暖真诚。每一张牌的解答都要挖到它反映的核心信念，不要只在最后总结一句。`:_.id===`four-elements`?`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力、真诚不玄乎。
+请按每张牌的顺序解读，紧密结合客户的具体问题展开。每段150-250字，温暖真诚。每一张牌的解答都要挖到它反映的核心信念，不要只在最后总结一句。`;else if(_.id===`four-elements`){let t=e.cards.emphasis?.card?.element||null;s=`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力、真诚不玄乎。
 
 核心理念：这是「植物信念觉察法」的第一阶段——觉察信念。客户抽到的每一张牌都不是偶然，它们从行动、情绪、思维、物质四个方向照进来，共同映照出客户此刻「秉持着什么核心信念」，才显化出了他当下的处境（比如工作不顺想离开又害怕、担心学员/家庭/事业）。解读目的不是讲牌义，而是帮客户看见那几条藏着的信念，看见它们曾经在保护他。语言要像朋友聊天，有温度、说到点子上。
 
@@ -37,7 +39,6 @@ import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{a as t,i as n,n as r,r
 - 圣杯 = 情绪与内心：他在「感受、关系」上秉持什么信念
 - 宝剑 = 思维与沟通：他在「想法、表达」上秉持什么信念
 - 星币 = 物质与自我价值：他在「价值、现实」上秉持什么信念
-- 强调牌 = 四个方向里，哪个方向的信念此刻最主导、最需要先被看见
 
 解读方法——每一张牌都按「场景 → 信念 → 显化」三步走：
 1. 场景（一句话带过）：用牌的画面，点出客户此刻在这个方向处于什么状态。例如权杖七——你现在像被多面夹击，处在竞争和压力里，硬撑着不后退。
@@ -51,16 +52,15 @@ import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{a as t,i as n,n as r,r
 硬性要求：
 - 四个方向必须挖出四条不同侧面的信念（做事/感受/想法/价值），措辞不能重复，不能四张牌都写成同一条。
 - 每条信念之后，点一句「它当初是在保护你什么」——信念没有对错，它曾经有用。
-- 强调牌单独解读，点出哪个方向的信念此刻最主导、要松先从这里松。
 
 请始终回扣客户的具体问题，落在当下处境里说，不要泛泛讲牌义。
 
 格式要求（纯文本，不要用 markdown 加粗符号）：
 - 每张牌一段，段首标明牌位和牌名，例如「【权杖·权杖七】」；
 - 每条核心信念单独一行，写成「核心信念：「…」」，方便学员直接念给客户听；
-- 最后加一段「主信念」：点出四条信念里哪一条是根，另外三条其实在为它服务（2-3 句）。
+- 最后加一段「主信念」：点出四条信念里哪一条是根，另外三条其实在为它服务（2-3 句）。${t?`\n\n定调牌：你抽到的这张定调牌，证明了影响你最深的是「${l[t].name}元素 · ${l[t].belief}」。这场解读、尤其是最后的「主信念」，请更看重这个方向。`:``}
 
-每段 150-250 字，温暖真诚。`:`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力，以「自我觉察」和「信念显化」为核心。
+每段 150-250 字，温暖真诚。`}else s=`你是 DO!Hand 工作室的塔罗解读师。解读风格：温暖、有洞察力，以「自我觉察」和「信念显化」为核心。
 
 核心理念：帮助客户看见自己当下的信念和认知模式。每一张牌都是客户内在状态的镜子——反映的是他们此刻持有什么样的想法、情绪、假设，才显化出了当前的生活境遇。解读目的是帮助客户找到「核心信念」——那个一直在无意识中驱动他们行为、情绪和选择的底层设定。语言要像朋友聊天——真诚、有温度、不玄乎。
 
