@@ -18,8 +18,8 @@ export function getSession() {
   }
 }
 
-function saveSession(phone, expiresAt) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ phone, expiresAt, loginAt: Date.now() }))
+function saveSession(code, phone, expiresAt) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ code, phone, expiresAt, loginAt: Date.now() }))
 }
 
 export default function AuthGate({ onLogin }) {
@@ -51,7 +51,7 @@ export default function AuthGate({ onLogin }) {
     try {
       const result = await verifyInviteCode(trimmedCode, trimmedPhone)
       if (result.success) {
-        saveSession(trimmedPhone, result.expiresAt)
+        saveSession(trimmedCode, trimmedPhone, result.expiresAt)
         onLogin()
       } else {
         setError(result.error)

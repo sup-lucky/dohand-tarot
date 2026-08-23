@@ -96,3 +96,41 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION keepalive_ping() TO anon;
+
+-- ============================================================
+-- 8. AI 解读每日限额（防止 DeepSeek key 被盗刷）
+--    表 + 原子计数函数，配合 Edge Function deepseek-proxy 使用
+-- ============================================================
+
+-- 8.1 限额表：按「手机号 + 日期」记录当天调用次数
+CREATE TABLE IF NOT EXISTS ai_quota (
+  phone       TEXT NOT NULL,
+  quota_date  DATE NOT NULL,
+  call_count  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (phone, quota_date)
+);
+
+-- 8.2 原子计数 + 判断是否超限（SECURITY DEFINER，anon 可调用，不暴露 key/表内容）
+CREATE OR REPLACE FUNCTION check_ai_quota(p_phone TEXT, p_limit INTEGER)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_today DATE := (NOW() AT TIME ZONE 'Asia/Shanghai')::DATE;
+  v_count INTEGER;
+BEGIN
+  INSERT INTO ai_quota (phone, quota_date, call_count)
+  VALUES (p_phone, v_today, 1)
+  ON CONFLICT (phone, quota_date)
+  DO UPDATE SET call_count = ai_quota.call_count + 1
+  RETURNING call_count INTO v_count;
+
+  RETURN jsonb_build_object(
+    'allowed', (v_count <= p_limit),
+    'remaining', GREATEST(p_limit - v_count, 0)
+  );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION check_ai_quota(TEXT, INTEGER) TO anon;

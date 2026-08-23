@@ -2,14 +2,8 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import spreads from '../data/spreads.json'
 import allCards from '../data/cards.json'
 import allHerbs from '../data/herbs.json'
-
-// DeepSeek API 配置
-// API Key 在项目根目录 .env 文件中设置: VITE_DEEPSEEK_API_KEY=sk-xxx
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || ''
-// 开发环境用 Vite proxy，生产环境用 API 直连
-const DEEPSEEK_URL = import.meta.env.DEV
-  ? '/api/deepseek/v1/chat/completions'
-  : 'https://api.deepseek.com/v1/chat/completions'
+import { deepseekProxy } from '../services/supabase'
+import { getSession } from '../components/AuthGate'
 
 const ELEMENT_INFO = {
   fire: { emoji: '🔥', name: '火', color: 'text-red-600', bg: 'bg-red-50', desc: '行动·热情·目的' },
@@ -178,34 +172,13 @@ export default function ResultPage({ reading, question, onRestart, onBack }) {
 
     const userMessage = `我的问题是：${question}\n\n我抽到的牌：\n${cardDescriptions}\n\n请为我详细解读。`
 
-    fetch(DEEPSEEK_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMessage },
-        ],
-        temperature: 0.7,
-        max_tokens: 4096,
-      }),
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
-      })
-      .then(data => {
-        const text = data.choices?.[0]?.message?.content || ''
-        if (!text) throw new Error('Empty response')
-        setAiInterpretation(text)
-      })
+    const phone = getSession()?.phone || ''
+    deepseekProxy({ phone, system: systemPrompt, user: userMessage })
+      .then(text => setAiInterpretation(text))
       .catch(err => {
-        console.warn('DeepSeek API 调用失败:', err.message)
-        setAiInterpretation('error')
+        console.warn('AI 解读调用失败:', err.message)
+        // 保存后端返回的中文错误（如限额提示），否则退回预写解读
+        setAiInterpretation(err.message || 'error')
       })
   }, [])
 
@@ -323,7 +296,7 @@ export default function ResultPage({ reading, question, onRestart, onBack }) {
           </div>
         )}
 
-        {aiInterpretation && aiInterpretation !== 'loading' && aiInterpretation !== 'error' && (
+        {aiInterpretation && aiInterpretation !== 'loading' && aiInterpretation !== 'error' && !aiInterpretation.startsWith('今日解读次数') && (
           <div className="bg-white rounded-2xl border border-amber-200 p-5">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-lg">🤖</span>
@@ -342,6 +315,11 @@ export default function ResultPage({ reading, question, onRestart, onBack }) {
           </div>
         )}
 
+        {aiInterpretation && aiInterpretation.startsWith('今日解读次数') && (
+          <div className="bg-white rounded-2xl border border-amber-200 p-4 text-center">
+            <p className="text-sm text-amber-600">{aiInterpretation}</p>
+          </div>
+        )}
         {aiInterpretation === 'error' && (
           <div className="bg-white rounded-2xl border border-stone-200 p-4 text-center">
             <p className="text-xs text-stone-400">AI 解读暂时不可用，以下为通用解读</p>
